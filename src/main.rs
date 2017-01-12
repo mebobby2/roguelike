@@ -41,6 +41,16 @@ fn main() {
                     charY += 1;
                 }
             },
+            Key {code: Left, .. } => {
+                if charX >= 1 {
+                    charX -= 1
+                }
+            },
+            Key {code: Right, .. } => {
+                if charX < (conX -1) {
+                    charX += 1
+                }
+            },
             _ => {}
         }
 
