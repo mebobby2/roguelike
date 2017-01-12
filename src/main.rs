@@ -12,10 +12,12 @@ fn render(con: &mut RootConsole, x: i32, y: i32) {
 }
 
 fn main() {
+    let conX = 80i32;
+    let conY = 50i32;
     let mut charX = 40i32;
     let mut charY = 25i32;
 
-    let mut con = RootConsole::initializer().size(80, 50).title("libtcod Rust tutorial").init();
+    let mut con = RootConsole::initializer().size(conX, conY).title("libtcod Rust tutorial").init();
     let mut exit = false;
 
     // render
@@ -32,6 +34,11 @@ fn main() {
             Key {code: Up, .. } => {
                 if charY >= 1 {
                     charY -= 1;
+                }
+            },
+            Key {code: Down, .. } => {
+                if charY < (conY - 1) {
+                    charY += 1;
                 }
             },
             _ => {}
