@@ -11,7 +11,7 @@ fn main() {
     while !(con.window_closed() || exit) {
         con.clear();
         con.put_char(40, 25, '@', BackgroundFlag::Set);
-        //Console::flush();
+        con.flush();
         let keypress = con.wait_for_keypress(true);
         match keypress {
             Key { code: Escape, .. } => exit = true,
