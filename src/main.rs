@@ -5,9 +5,10 @@ use tcod::input::Key;
 use tcod::input::{KeyCode};
 use tcod::input::KeyCode::{Up, Down, Left, Right, Escape, Enter};
 
-fn render(con: &mut RootConsole, x: i32, y: i32) {
+fn render(con: &mut RootConsole, x: i32, y: i32, dogX: i32, dogY: i32) {
     con.clear();
     con.put_char(x, y, '@', BackgroundFlag::Set);
+    con.put_char(dogX, dogY, 'd', BackgroundFlag::Set);
     con.flush();
 }
 
@@ -16,12 +17,14 @@ fn main() {
     let conY = 50i32;
     let mut charX = 40i32;
     let mut charY = 25i32;
+    let mut dogX = 10i32;
+    let mut dogY = 10i32;
 
     let mut con = RootConsole::initializer().size(conX, conY).title("libtcod Rust tutorial").init();
     let mut exit = false;
 
     // render
-    render(&mut con, charX, charY);
+    render(&mut con, charX, charY, dogX, dogY);
 
     // our game loop
     while !(con.window_closed() || exit) {
@@ -55,6 +58,6 @@ fn main() {
         }
 
         //render
-        render(&mut con, charX, charY);
+        render(&mut con, charX, charY, dogX, dogY);
     }
 }
