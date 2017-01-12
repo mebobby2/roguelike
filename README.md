@@ -2,7 +2,6 @@
 
 ## Prerequisite
 
-*
 1. Rust
 2. Cargo
 3. libtcod
