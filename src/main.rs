@@ -3,8 +3,7 @@ extern crate rand;
 
 use tcod::{Console, RootConsole, BackgroundFlag};
 use tcod::input::Key;
-use tcod::input::{KeyCode};
-use tcod::input::KeyCode::{Up, Down, Left, Right, Escape, Enter};
+use tcod::input::KeyCode::{Up, Down, Left, Right, Escape};
 use rand::Rng;
 
 #[derive(Copy, Clone)]
@@ -16,6 +15,40 @@ struct Point {
 struct Bound {
     min: Point,
     max: Point
+}
+
+impl Point {
+    fn offset_x(&self, offset: i32) -> Point {
+        Point { x: self.x + offset, .. *self }
+    }
+
+    fn offset_y(&self, offset: i32) -> Point {
+        Point { y: self.y + offset, .. *self }
+    }
+
+    fn offset(&self, offset: Point) -> Point {
+        Point { x: self.x + offset.x, y: self.y + offset.y }
+    }
+}
+
+enum Contains {
+    DoesContain,
+    DoesNotContain
+}
+
+impl Bound {
+    fn contains(&self, point: Point) -> Contains {
+        if
+            point.x >= self.min.x &&
+            point.x < self.max.x &&
+            point.y >= self.min.y &&
+            point.y < self.max.y
+        {
+            Contains::DoesContain
+        } else {
+            Contains::DoesNotContain
+        }
+    }
 }
 
 fn render(con: &mut RootConsole, c_point: Point, d_point: Point) {
@@ -42,39 +75,40 @@ fn main() {
         let keypress = con.wait_for_keypress(true);
 
         // update game state
+        let mut offset = Point { x: 0, y: 0 };
+
         match keypress {
             Key {code: Escape, .. } => exit = true,
             Key {code: Up, .. } => {
-                if char_point.y >= (window_bounds.min.y + 1) {
-                    char_point.y -= 1;
-                }
+               offset.y = -1
             },
             Key {code: Down, .. } => {
-                if char_point.y < (window_bounds.max.y - 1) {
-                    char_point.y += 1;
-                }
+                offset.y = 1
             },
             Key {code: Left, .. } => {
-                if char_point.x >= (window_bounds.min.x + 1) {
-                    char_point.x -= 1
-                }
+                offset.x = -1
             },
             Key {code: Right, .. } => {
-                if char_point.x < (window_bounds.max.x -1) {
-                    char_point.x += 1
-                }
+                offset.x = 1
             },
             _ => {}
         }
 
+        match window_bounds.contains(char_point.offset(offset)) {
+            Contains::DoesContain => char_point = char_point.offset(offset),
+            Contains::DoesNotContain => {},
+        }
+
         let offset_x = rand::thread_rng().gen_range(0, 3i32) - 1;
-        if (dog_point.x + offset_x) > 0 && (dog_point.x + offset_x) < (window_bounds.max.x - 1) {
-            dog_point.x += offset_x;
+        match window_bounds.contains(dog_point.offset_x(offset_x)) {
+            Contains::DoesContain => dog_point = dog_point.offset_x(offset_x),
+            Contains::DoesNotContain => {},
         }
 
         let offset_y = rand::thread_rng().gen_range(0, 3i32) - 1;
-        if (dog_point.y + offset_y) > 0 && (dog_point.y + offset_y) < (window_bounds.max.x - 1) {
-            dog_point.y += offset_y;
+        match window_bounds.contains(dog_point.offset_y(offset_y)) {
+            Contains::DoesContain => dog_point = dog_point.offset_y(offset_y),
+            Contains::DoesNotContain => {},
         }
 
         //render

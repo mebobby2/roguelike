@@ -17,4 +17,4 @@ http://stackoverflow.com/questions/17643509/conflict-between-dynamic-linking-pri
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-2
-I ran into just one gotcha here. We have to store the height of the window in
+This gives us some pretty good building blocks to work off of. But there’s
