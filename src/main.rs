@@ -13,6 +13,11 @@ struct Point {
   y: i32
 }
 
+struct Bound {
+    min: Point,
+    max: Point
+}
+
 fn render(con: &mut RootConsole, c_point: Point, d_point: Point) {
     con.clear();
     con.put_char(c_point.x, c_point.y, '@', BackgroundFlag::Set);
@@ -21,12 +26,11 @@ fn render(con: &mut RootConsole, c_point: Point, d_point: Point) {
 }
 
 fn main() {
-    let conX = 80i32;
-    let conY = 50i32;
+    let window_bounds = Bound { min: Point { x: 0, y: 0}, max: Point { x: 79, y: 49 } };
     let mut char_point = Point { x: 40, y: 25 };
     let mut dog_point = Point { x: 10, y: 10 };
 
-    let mut con = RootConsole::initializer().size(conX, conY).title("libtcod Rust tutorial").init();
+    let mut con = RootConsole::initializer().size(window_bounds.max.x, window_bounds.max.y).title("libtcod Rust tutorial").init();
     let mut exit = false;
 
     // render
@@ -41,22 +45,22 @@ fn main() {
         match keypress {
             Key {code: Escape, .. } => exit = true,
             Key {code: Up, .. } => {
-                if char_point.y >= 1 {
+                if char_point.y >= (window_bounds.min.y + 1) {
                     char_point.y -= 1;
                 }
             },
             Key {code: Down, .. } => {
-                if char_point.y < (conY - 1) {
+                if char_point.y < (window_bounds.max.y - 1) {
                     char_point.y += 1;
                 }
             },
             Key {code: Left, .. } => {
-                if char_point.x >= 1 {
+                if char_point.x >= (window_bounds.min.x + 1) {
                     char_point.x -= 1
                 }
             },
             Key {code: Right, .. } => {
-                if char_point.x < (conX -1) {
+                if char_point.x < (window_bounds.max.x -1) {
                     char_point.x += 1
                 }
             },
@@ -64,12 +68,12 @@ fn main() {
         }
 
         let offset_x = rand::thread_rng().gen_range(0, 3i32) - 1;
-        if (dog_point.x + offset_x) > 0 && (dog_point.x + offset_x) < (conX - 1) {
+        if (dog_point.x + offset_x) > 0 && (dog_point.x + offset_x) < (window_bounds.max.x - 1) {
             dog_point.x += offset_x;
         }
 
         let offset_y = rand::thread_rng().gen_range(0, 3i32) - 1;
-        if (dog_point.y + offset_y) > 0 && (dog_point.y + offset_y) < (conY - 1) {
+        if (dog_point.y + offset_y) > 0 && (dog_point.y + offset_y) < (window_bounds.max.x - 1) {
             dog_point.y += offset_y;
         }
 
