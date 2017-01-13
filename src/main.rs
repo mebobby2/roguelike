@@ -51,23 +51,30 @@ impl Bound {
     }
 }
 
-fn render(con: &mut RootConsole, c_point: Point, d_point: Point) {
+#[derive(Copy, Clone)]
+struct Character {
+    position: Point,
+    display_char: char
+}
+
+fn render(con: &mut RootConsole, ch: Character, dog: Character) {
     con.clear();
-    con.put_char(c_point.x, c_point.y, '@', BackgroundFlag::Set);
-    con.put_char(d_point.x, d_point.y, 'd', BackgroundFlag::Set);
+    con.put_char(ch.position.x, ch.position.y, ch.display_char, BackgroundFlag::Set);
+    con.put_char(dog.position.x, dog.position.y, dog.display_char, BackgroundFlag::Set);
     con.flush();
 }
 
 fn main() {
     let window_bounds = Bound { min: Point { x: 0, y: 0}, max: Point { x: 79, y: 49 } };
-    let mut char_point = Point { x: 40, y: 25 };
-    let mut dog_point = Point { x: 10, y: 10 };
+
+    let mut ch = Character { position: Point {x: 40, y: 25}, display_char: '@' };
+    let mut dog = Character { position: Point {x: 10, y: 10}, display_char: 'd' };
 
     let mut con = RootConsole::initializer().size(window_bounds.max.x, window_bounds.max.y).title("libtcod Rust tutorial").init();
     let mut exit = false;
 
     // render
-    render(&mut con, char_point, dog_point);
+    render(&mut con, ch, dog);
 
     // our game loop
     while !(con.window_closed() || exit) {
@@ -94,24 +101,24 @@ fn main() {
             _ => {}
         }
 
-        match window_bounds.contains(char_point.offset(offset)) {
-            Contains::DoesContain => char_point = char_point.offset(offset),
+        match window_bounds.contains(ch.position.offset(offset)) {
+            Contains::DoesContain => ch.position = ch.position.offset(offset),
             Contains::DoesNotContain => {},
         }
 
         let offset_x = rand::thread_rng().gen_range(0, 3i32) - 1;
-        match window_bounds.contains(dog_point.offset_x(offset_x)) {
-            Contains::DoesContain => dog_point = dog_point.offset_x(offset_x),
+        match window_bounds.contains(dog.position.offset_x(offset_x)) {
+            Contains::DoesContain => dog.position = dog.position.offset_x(offset_x),
             Contains::DoesNotContain => {},
         }
 
         let offset_y = rand::thread_rng().gen_range(0, 3i32) - 1;
-        match window_bounds.contains(dog_point.offset_y(offset_y)) {
-            Contains::DoesContain => dog_point = dog_point.offset_y(offset_y),
+        match window_bounds.contains(dog.position.offset_y(offset_y)) {
+            Contains::DoesContain => dog.position = dog.position.offset_y(offset_y),
             Contains::DoesNotContain => {},
         }
 
         //render
-        render(&mut con, char_point, dog_point);
+        render(&mut con, ch, dog);
     }
 }
