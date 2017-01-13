@@ -17,4 +17,4 @@ http://stackoverflow.com/questions/17643509/conflict-between-dynamic-linking-pri
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-2
-If you’re thinking, “Wtf?”, I don’t blame you. This took me a couple hours to figure out.
+There’s one last thing I want to do before ending this tutorial. Right now
