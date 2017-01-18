@@ -20,7 +20,8 @@ fn render(con: &mut RootConsole, npcs: &Vec<Box<Updates>>, c: Character) {
     con.flush();
 }
 
-fn update(npcs: &mut Vec<Box<Updates>>, keypress: tcod::input::Key, game: Game) {
+fn update(npcs: &mut Vec<Box<Updates>>, c: &mut Character, keypress: tcod::input::Key, game: Game) {
+    c.update(keypress, game);
     for i in npcs.iter_mut() {
         i.update(keypress, game);
     }
@@ -48,7 +49,7 @@ fn main() {
             Key {code: Escape, .. } => game.exit = true,
             _ => {}
         }
-        update(&mut npcs, keypress, game);
+        update(&mut npcs, &mut c, keypress, game);
 
         render(&mut con, &npcs, c);
     }
