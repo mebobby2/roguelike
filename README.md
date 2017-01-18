@@ -52,4 +52,4 @@ struct C {
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
-Here’s the last bit of cleanup before we start on combat. We have a lot of coupling going on here.
+Go ahead and build the project. You should get a ton of errors that look like this:

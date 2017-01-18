@@ -10,6 +10,7 @@ use roguelike::game::Game;
 use roguelike::traits::Updates;
 use roguelike::character::Character;
 use roguelike::npc::NPC;
+use roguelike::rendering::TcodRenderingComponent;
 
 fn render(con: &mut RootConsole, npcs: &Vec<Box<Updates>>, c: Character) {
     con.clear();
@@ -30,6 +31,8 @@ fn update(npcs: &mut Vec<Box<Updates>>, c: &mut Character, keypress: tcod::input
 fn main() {
     let mut game = Game { exit: false, window_bounds: Bound { min: Point { x: 0, y: 0}, max: Point { x: 79, y: 49 } }};
     let mut con = RootConsole::initializer().size(game.window_bounds.max.x, game.window_bounds.max.y).title("libtcod Rust tutorial").init();
+
+    let mut rendering_component = Box::new(TcodRenderingComponent { console: con });
 
     let mut c = Character::new(40, 25, '@');
     let d = Box::new(NPC::new(10, 10, 'd'));
