@@ -26,6 +26,29 @@ let a = A // a is a reference
 let b = 2 // b is also a reference, even though its pointing to a primitive type
 ```
 
+### Traits are not sized
+
+Structs have a fixed known size at compile time. Traits do not, since they are an abstract concept. Therefore, you can use a struct as the type of a instance property, but not a trait.
+
+```
+struct A
+
+trait Updates {}
+
+// This compiles
+struct B {
+    prop: A
+}
+
+// This does NOT compile
+struct C {
+    proper: Updates
+}
+
+```
+
+
+
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
