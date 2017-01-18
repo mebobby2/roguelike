@@ -23,7 +23,7 @@ fn render(con: &mut RootConsole, npcs: &Vec<Box<Updates>>, c: Character) {
 fn update(npcs: &mut Vec<Box<Updates>>, c: &mut Character, keypress: tcod::input::Key, game: Game) {
     c.update(keypress, game);
     for i in npcs.iter_mut() {
-        i.update(keypress, game);
+        i.update(game);
     }
 }
 

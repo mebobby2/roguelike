@@ -1,7 +1,7 @@
 extern crate tcod;
 extern crate rand;
 
-use self::tcod::{Console, RootConsole, BackgroundFlag};
+use self::tcod::{Console, BackgroundFlag};
 use self::rand::Rng;
 
 use traits::Updates;
@@ -20,7 +20,7 @@ impl NPC {
 }
 
 impl Updates for NPC {
-    fn update(&mut self, keypress: tcod::input::Key, game: Game) {
+    fn update(&mut self, game: Game) {
         let offset_x = rand::thread_rng().gen_range(0, 3i32) - 1;
         match game.window_bounds.contains(self.position.offset_x(offset_x)) {
             Contains::DoesContain => self.position = self.position.offset_x(offset_x),
