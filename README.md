@@ -17,3 +17,4 @@ http://stackoverflow.com/questions/17643509/conflict-between-dynamic-linking-pri
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
+Here’s the last bit of cleanup before we start on combat. We have a lot of coupling going on here.
