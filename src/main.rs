@@ -32,6 +32,7 @@ fn main() {
     let mut game = Game { exit: false, window_bounds: Bound { min: Point { x: 0, y: 0}, max: Point { x: 79, y: 49 } }};
     let mut con = RootConsole::initializer().size(game.window_bounds.max.x, game.window_bounds.max.y).title("libtcod Rust tutorial").init();
 
+    //Not sure why coercing from TcodRenderingComponent to RenderingComponent works
     let mut rendering_component: Box<RenderingComponent> = Box::new(TcodRenderingComponent{console: con});
 
     let mut c = Character::new(40, 25, '@');
