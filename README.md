@@ -52,4 +52,4 @@ struct C {
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
-Go ahead and build the project. You should get a ton of errors that look like this:
+Actually making components generic

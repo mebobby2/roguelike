@@ -2,7 +2,7 @@ extern crate tcod;
 extern crate rand;
 extern crate roguelike;
 
-use tcod::{Console, RootConsole};
+use tcod::RootConsole;
 use tcod::input::Key;
 use tcod::input::KeyCode::{Escape};
 use roguelike::util::{Point, Bound};
@@ -12,13 +12,13 @@ use roguelike::character::Character;
 use roguelike::npc::NPC;
 use roguelike::rendering::TcodRenderingComponent;
 
-fn render(con: &mut RootConsole, npcs: &Vec<Box<Updates>>, c: Character) {
-    con.clear();
+fn render(rendering_component: &mut Box<TcodRenderingComponent>, npcs: &Vec<Box<Updates>>, c: Character) {
+    rendering_component.before_render_new_frame();
     for i in npcs.iter() {
-        i.render(con);
+        i.render(rendering_component);
     }
-    c.render(con);
-    con.flush();
+    c.render(rendering_component);
+    rendering_component.after_render_new_frame();
 }
 
 fn update(npcs: &mut Vec<Box<Updates>>, c: &mut Character, keypress: tcod::input::Key, game: Game) {
@@ -41,12 +41,12 @@ fn main() {
     let mut npcs: Vec<Box<Updates>> = vec![d,ct];
 
     // render
-    render(&mut con, &npcs, c);
+    render(&mut rendering_component, &npcs, c);
 
     // our game loop
-    while !(con.window_closed() || game.exit) {
+    while !(rendering_component.console.window_closed() || game.exit) {
         // wait for user input
-        let keypress = con.wait_for_keypress(true);
+        let keypress = rendering_component.wait_for_keypress();
 
         match keypress {
             Key {code: Escape, .. } => game.exit = true,
@@ -54,6 +54,6 @@ fn main() {
         }
         update(&mut npcs, &mut c, keypress, game);
 
-        render(&mut con, &npcs, c);
+        render(&mut rendering_component, &npcs, c);
     }
 }
