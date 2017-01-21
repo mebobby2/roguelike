@@ -52,4 +52,4 @@ struct C {
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
-Actually making components generic
+Moving Logic to Game

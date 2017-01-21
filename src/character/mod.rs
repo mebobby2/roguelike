@@ -6,7 +6,7 @@ use self::tcod::input::Key;
 
 use util::{Point, Contains};
 use game::Game;
-use rendering::TcodRenderingComponent;
+use rendering::RenderingComponent;
 
 #[derive(Copy, Clone)]
 pub struct Character {
@@ -43,7 +43,7 @@ impl Character {
         }
     }
 
-    pub fn render(&self, rendering_component: &mut Box<TcodRenderingComponent>) {
+    pub fn render(&self, rendering_component: &mut Box<RenderingComponent>) {
         rendering_component.render_object(self.position, self.display_char);
     }
 }
