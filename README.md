@@ -89,3 +89,5 @@ let a2 = me as Box<Me>;
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
 Moving Logic to Game
+
+but first, http://xania.org/201506/traits-and-trait-objects, understand object safety in rust first
