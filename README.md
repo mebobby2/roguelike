@@ -47,6 +47,42 @@ struct C {
 
 ```
 
+### Downcasting
+
+We have this:
+```
+trait Me {
+  fn hello(& self);
+}
+
+struct A {
+}
+
+impl Me for A {
+  fn hello(& self) {}
+}
+```
+
+Downcasting into a trait without a reference will not compile:
+```
+// does not compile
+let a = A{};
+let a2 = me as Me;
+```
+
+Using references will compile:
+```
+let a = A{};
+let a2 = &me as &Me;
+```
+
+Using box will also compile:
+```
+let a = Box::new(A{});
+let a2 = me as Box<Me>;
+```
+
+
 
 
 ## Upto
