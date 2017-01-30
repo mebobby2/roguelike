@@ -21,7 +21,7 @@ impl NPC {
 }
 
 impl Updates for NPC {
-    fn update(&mut self, game: Game) {
+    fn update(&mut self, game: &Game) {
         let offset_x = rand::thread_rng().gen_range(0, 3i32) - 1;
         match game.window_bounds.contains(self.position.offset_x(offset_x)) {
             Contains::DoesContain => self.position = self.position.offset_x(offset_x),
