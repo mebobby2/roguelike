@@ -88,4 +88,4 @@ let a2 = me as Box<Me>;
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
-The next place we’re coupled is in the handling of input on our
+Turns out our RandomMovementComponent wasn’t so bad to implement. Let’s make one for our Character
