@@ -1,5 +1,4 @@
 extern crate tcod;
-extern crate rand;
 extern crate roguelike;
 
 use tcod::input::Key;
@@ -8,13 +7,17 @@ use roguelike::game::Game;
 use roguelike::traits::Updates;
 use roguelike::character::Character;
 use roguelike::npc::NPC;
+use roguelike::movement::{RandomMovementComponent, MovementComponent};
 
 fn main() {
     let mut game = Game::new();
     let mut c = Character::new(40, 25, '@');
+
+    let cmc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(game.window_bounds));
+    let dmc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(game.window_bounds));
     let mut npcs: Vec<Box<Updates>> = vec![
-        Box::new(NPC::new(10, 10, 'd')),
-        Box::new(NPC::new(40, 25, 'c'))
+        Box::new(NPC::new(10, 10, 'd', dmc)),
+        Box::new(NPC::new(40, 25, 'c', cmc))
     ];
 
     // render
