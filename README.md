@@ -128,4 +128,4 @@ hello(&a)
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
-Turns out our RandomMovementComponent wasn’t so bad to implement. Let’s make one for our Character
+Cool! Now both our NPC and our Character are using a rendering component and a movement component
