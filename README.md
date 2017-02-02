@@ -82,7 +82,7 @@ let a = Box::new(A{});
 let a2 = me as Box<Me>;
 ```
 
-### mut reference by default if no copy
+### Mut reference by default if no copy
 ```
 #[derive(Copy, Clone)]
 struct A
@@ -108,7 +108,7 @@ hello(a)
 
 ```
 
-Will not compile because struct A does not implement clone. Meaning when we pass it to hello, it's actually take a mutable reference (by default). And Rust borrow rules says that we cannot have a mut reference and a immutable reference at the same time. This is why this does not compile. We get a "use of moved value: `a`" error.
+Will not compile because struct A does not implement clone. Meaning when we pass it to hello, it's actually take a mutable reference (by default). And Rust borrow rules says that we cannot have a mut reference and an immutable reference to the same memory location at the same time. This is why this does not compile. We get a "use of moved value: `a`" error.
 
 To make it work:
 ```
@@ -121,7 +121,7 @@ hello(&a)
 hello(&a)
 
 ```
-
+That is, make hello take an immutable reference to A instead.
 
 
 
