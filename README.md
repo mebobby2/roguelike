@@ -82,6 +82,46 @@ let a = Box::new(A{});
 let a2 = me as Box<Me>;
 ```
 
+### mut reference by default if no copy
+```
+#[derive(Copy, Clone)]
+struct A
+
+fn hello(a: A)
+
+let a = A{}
+hello(a)
+hello(a)
+
+```
+
+The above code works because struct A implements copy trait, so when we pass it to hello, it gets copied.
+
+```
+struct A
+
+fn hello(a: A)
+
+let a = A{}
+hello(a)
+hello(a)
+
+```
+
+Will not compile because struct A does not implement clone. Meaning when we pass it to hello, it's actually take a mutable reference (by default). And Rust borrow rules says that we cannot have a mut reference and a immutable reference at the same time. This is why this does not compile. We get a "use of moved value: `a`" error.
+
+To make it work:
+```
+struct A
+
+fn hello(a: &A)
+
+let a = A{}
+hello(&a)
+hello(&a)
+
+```
+
 
 
 
