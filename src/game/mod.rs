@@ -13,6 +13,8 @@ pub struct Game {
     pub rendering_component: Box<RenderingComponent>
 }
 
+static mut LAST_KEYPRESS: Option<Key> = None;
+
 impl Game {
   pub fn new() -> Game {
    let bound = Bound {
@@ -46,6 +48,16 @@ impl Game {
   }
 
   pub fn wait_for_keypress(&mut self) -> Key {
-    self.rendering_component.wait_for_keypress()
+    let k = self.rendering_component.wait_for_keypress();
+    Game::set_last_keypress(k);
+    return k;
+  }
+
+  pub fn get_last_keypress() -> Option<Key> {
+    unsafe { LAST_KEYPRESS }
+  }
+
+  pub fn set_last_keypress(key: Key) {
+    unsafe { LAST_KEYPRESS = Some(key); }
   }
 }
