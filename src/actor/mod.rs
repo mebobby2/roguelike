@@ -1,10 +1,11 @@
 use util::{Point, Bound};
+use game::Game;
 use rendering::RenderingComponent;
-use movement::{RandomMovementComponent, MovementComponent, TcodUserMovementComponent};
+use movement::{RandomMovementComponent, MovementComponent, TcodUserMovementComponent, AggroMovementComponent};
 
 
 pub struct Actor {
-    position: Point,
+    pub position: Point,
     display_char: char,
     movement_component: Box<MovementComponent>
 }
@@ -32,8 +33,14 @@ impl Actor {
         Actor::new(x, y, 'c', mc)
     }
 
-    pub fn heroine(x: i32, y: i32, bound: Bound) -> Actor {
+    pub fn heroine(bound: Bound) -> Actor {
+        let point = Game::get_character_point();
         let mc: Box<MovementComponent> = Box::new(TcodUserMovementComponent::new(bound));
-        Actor::new(x, y, '@', mc)
+        Actor::new(point.x, point.y, '@', mc)
+    }
+
+    pub fn kobold(x: i32, y: i32, bound: Bound) -> Actor {
+        let mc: Box<MovementComponent> = Box::new(AggroMovementComponent::new(bound));
+        Actor::new(x, y, 'k', mc)
     }
 }

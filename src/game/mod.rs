@@ -13,6 +13,7 @@ pub struct Game {
 }
 
 static mut LAST_KEYPRESS: Option<Key> = None;
+static mut CHAR_LOCATION: Point = Point { x: 40, y: 25 };
 
 impl Game {
   pub fn new() -> Game {
@@ -41,6 +42,7 @@ impl Game {
 
   pub fn update(&mut self, npcs: &mut Vec<Box<Actor>>, c: &mut Actor) {
     c.update();
+    Game::set_character_point(c.position);
     for i in npcs.iter_mut() {
         i.update();
     }
@@ -58,5 +60,13 @@ impl Game {
 
   pub fn set_last_keypress(key: Key) {
     unsafe { LAST_KEYPRESS = Some(key); }
+  }
+
+  pub fn get_character_point() -> Point {
+    unsafe { CHAR_LOCATION }
+  }
+
+  pub fn set_character_point(point: Point) {
+    unsafe { CHAR_LOCATION = point; }
   }
 }
