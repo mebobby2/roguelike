@@ -127,5 +127,4 @@ That is, make hello take an immutable reference to A instead.
 
 ## Upto
 
-https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-3
-Cool! Now both our NPC and our Character are using a rendering component and a movement component
+https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
