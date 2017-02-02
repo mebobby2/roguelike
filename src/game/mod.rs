@@ -31,7 +31,7 @@ impl Game {
     }
   }
 
-  pub fn render(&mut self, npcs: &Vec<Box<Updates>>, c: Character) {
+  pub fn render(&mut self, npcs: &Vec<Box<Updates>>, c: &Character) {
     self.rendering_component.before_render_new_frame();
     for i in npcs.iter() {
         i.render(&mut self.rendering_component);
@@ -40,8 +40,8 @@ impl Game {
     self.rendering_component.after_render_new_frame();
   }
 
-  pub fn update(&mut self, npcs: &mut Vec<Box<Updates>>, c: &mut Character, keypress: Key) {
-    c.update(keypress, self);
+  pub fn update(&mut self, npcs: &mut Vec<Box<Updates>>, c: &mut Character) {
+    c.update();
     for i in npcs.iter_mut() {
         i.update();
     }

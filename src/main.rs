@@ -7,11 +7,12 @@ use roguelike::game::Game;
 use roguelike::traits::Updates;
 use roguelike::character::Character;
 use roguelike::npc::NPC;
-use roguelike::movement::{RandomMovementComponent, MovementComponent};
+use roguelike::movement::{RandomMovementComponent, MovementComponent, TcodUserMovementComponent};
 
 fn main() {
     let mut game = Game::new();
-    let mut c = Character::new(40, 25, '@');
+    let char_mc: Box<MovementComponent> = Box::new(TcodUserMovementComponent::new(game.window_bounds));
+    let mut c = Character::new(40, 25, '@', char_mc);
 
     let cmc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(game.window_bounds));
     let dmc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(game.window_bounds));
@@ -21,7 +22,7 @@ fn main() {
     ];
 
     // render
-    game.render(&npcs, c);
+    game.render(&npcs, &c);
 
     // our game loop
     while !(game.rendering_component.window_closed() || game.exit) {
@@ -32,8 +33,8 @@ fn main() {
             Key {code: Escape, .. } => game.exit = true,
             _ => {}
         }
-        game.update(&mut npcs, &mut c, keypress);
+        game.update(&mut npcs, &mut c);
 
-        game.render(&npcs, c);
+        game.render(&npcs, &c);
     }
 }

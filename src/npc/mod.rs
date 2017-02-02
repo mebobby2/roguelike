@@ -1,8 +1,7 @@
-use movement::MovementComponent;
-
 use traits::Updates;
 use util::Point;
 use rendering::RenderingComponent;
+use movement::MovementComponent;
 
 pub struct NPC {
     position: Point,
