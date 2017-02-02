@@ -1,5 +1,3 @@
-extern crate tcod;
-use self::tcod::{Console};
 use rendering::RenderingComponent;
 
 pub trait Updates {

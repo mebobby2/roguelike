@@ -1,13 +1,7 @@
-extern crate tcod;
-extern crate rand;
-
-use self::tcod::{Console, BackgroundFlag};
-use self::rand::Rng;
 use movement::MovementComponent;
 
 use traits::Updates;
-use util::{Point, Contains};
-use game::Game;
+use util::Point;
 use rendering::RenderingComponent;
 
 pub struct NPC {
