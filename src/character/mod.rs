@@ -3,9 +3,9 @@ use rendering::RenderingComponent;
 use movement::MovementComponent;
 
 pub struct Character {
-    pub position: Point,
-    pub display_char: char,
-    pub movement_component: Box<MovementComponent>
+    position: Point,
+    display_char: char,
+    movement_component: Box<MovementComponent>
 }
 
 impl Character {
