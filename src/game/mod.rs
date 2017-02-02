@@ -4,8 +4,7 @@ use self::tcod::RootConsole;
 use self::tcod::input::Key;
 use util::{Bound, Point};
 use rendering::{RenderingComponent, TcodRenderingComponent};
-use traits::Updates;
-use character::Character;
+use actor::Actor;
 
 pub struct Game {
     pub exit: bool,
@@ -31,7 +30,7 @@ impl Game {
     }
   }
 
-  pub fn render(&mut self, npcs: &Vec<Box<Updates>>, c: &Character) {
+  pub fn render(&mut self, npcs: &Vec<Box<Actor>>, c: &Actor) {
     self.rendering_component.before_render_new_frame();
     for i in npcs.iter() {
         i.render(&mut self.rendering_component);
@@ -40,7 +39,7 @@ impl Game {
     self.rendering_component.after_render_new_frame();
   }
 
-  pub fn update(&mut self, npcs: &mut Vec<Box<Updates>>, c: &mut Character) {
+  pub fn update(&mut self, npcs: &mut Vec<Box<Actor>>, c: &mut Actor) {
     c.update();
     for i in npcs.iter_mut() {
         i.update();
