@@ -90,6 +90,24 @@ pub struct TcodStatsWindowComponent {
     bounds: Bound
 }
 
+pub struct TcodInputWindowComponent {
+    console: OffscreenConsole,
+    background_color: Color,
+    bounds: Bound
+}
+
+pub struct TcodMessagesWindowComponent {
+    console: OffscreenConsole,
+    background_color: Color,
+    bounds: Bound
+}
+
+pub struct TcodMapWindowComponent {
+    console: OffscreenConsole,
+    background_color: Color,
+    bounds: Bound
+}
+
 impl TcodStatsWindowComponent {
     pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
         let height = bounds.max.y - bounds.min.y + 1;
@@ -105,7 +123,70 @@ impl TcodStatsWindowComponent {
     }
 }
 
+impl TcodInputWindowComponent {
+    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
+        let height = bounds.max.y - bounds.min.y + 1;
+        let width = bounds.max.x - bounds.min.x + 1;
+        let console = OffscreenConsole::new(width, height);
+
+        let red = Color::new(0u8, 255u8, 0u8);
+        TcodStatsWindowComponent {
+            console: console,
+            background_color: red,
+            bounds: bounds
+        }
+    }
+}
+
+impl TcodMessagesWindowComponent {
+    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
+        let height = bounds.max.y - bounds.min.y + 1;
+        let width = bounds.max.x - bounds.min.x + 1;
+        let console = OffscreenConsole::new(width, height);
+
+        let red = Color::new(0u8, 0u8, 255u8);
+        TcodStatsWindowComponent {
+            console: console,
+            background_color: red,
+            bounds: bounds
+        }
+    }
+}
+
+impl TcodMapWindowComponent {
+    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
+        let height = bounds.max.y - bounds.min.y + 1;
+        let width = bounds.max.x - bounds.min.x + 1;
+        let console = OffscreenConsole::new(width, height);
+
+        let red = Color::new(255u8, 255u8, 255u8);
+        TcodStatsWindowComponent {
+            console: console,
+            background_color: red,
+            bounds: bounds
+        }
+    }
+}
+
 impl WindowComponent for TcodStatsWindowComponent {
+    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
+    fn get_bounds(&self) -> Bound { self.bounds }
+    fn get_bg_color(&self) -> Color { self.background_color }
+}
+
+impl WindowComponent for TcodInputWindowComponent {
+    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
+    fn get_bounds(&self) -> Bound { self.bounds }
+    fn get_bg_color(&self) -> Color { self.background_color }
+}
+
+impl WindowComponent for TcodMessagesWindowComponent {
+    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
+    fn get_bounds(&self) -> Bound { self.bounds }
+    fn get_bg_color(&self) -> Color { self.background_color }
+}
+
+impl WindowComponent for TcodMapWindowComponent {
     fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
     fn get_bounds(&self) -> Bound { self.bounds }
     fn get_bg_color(&self) -> Color { self.background_color }
