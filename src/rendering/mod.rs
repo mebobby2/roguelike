@@ -15,7 +15,7 @@ pub trait RenderingComponent {
 }
 
 pub struct TcodRenderingComponent {
-    pub console: RootConsole
+    console: RootConsole
 }
 
 impl TcodRenderingComponent {
@@ -63,10 +63,6 @@ impl RenderingComponent for TcodRenderingComponent {
                             (bounds.min.x, bounds.min.y),
                             1.0,
                             1.0);
-
-        // tcod::console::blit(con, (0, 0), (SCREEN_WIDTH, SCREEN_HEIGHT),
-        //                 root, (0, 0),
-        //                 1.0, 1.0);
     }
 }
 
@@ -89,8 +85,8 @@ pub trait WindowComponent {
 }
 
 pub struct TcodStatsWindowComponent {
-    pub console: OffscreenConsole,
-    pub background_color: Color,
+    console: OffscreenConsole,
+    background_color: Color,
     bounds: Bound
 }
 
