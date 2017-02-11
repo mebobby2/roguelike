@@ -128,3 +128,6 @@ That is, make hello take an immutable reference to A instead.
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
+upto: But there’s a problem. You can move your character outside of the main map window.
+
+Before that: get the other 3 windows to render.
