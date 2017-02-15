@@ -128,4 +128,4 @@ That is, make hello take an immutable reference to A instead.
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
-upto: Let’s get back to the idea of combat. Here was our to-do list to make combat work
+upto: Next we’ll change our attach_window method in TcodRenderComponent so that it renders our messages right before attaching the window

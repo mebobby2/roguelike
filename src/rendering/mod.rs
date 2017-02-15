@@ -82,30 +82,59 @@ pub trait WindowComponent {
         let mut console = self.get_console();
         console.print_ex(x, y, BackgroundFlag::Set, alignment, text);
     }
+
+    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
+        &mut self.messages
+    }
+
+    fn get_messages(&self) -> Vec<Box<String>> {
+        self.messages.clone()
+    }
+
+    fn get_max_messages(&self) -> u32 {
+        self.max_messages
+    }
+
+    fn buffer_message(&mut self, text: &str) {
+        let max = self.get_max_messages();
+        let message = String::from_str(text);
+        let messages = self.get_mut_messages();
+
+        messages.insert(0, Box::new(messages));
+        messages.truncate(max);
+    }
 }
 
 pub struct TcodStatsWindowComponent {
     console: OffscreenConsole,
     background_color: Color,
-    bounds: Bound
+    bounds: Bound,
+    messages: Vec<Box<String>>,
+    max_messages: u32
 }
 
 pub struct TcodInputWindowComponent {
     console: OffscreenConsole,
     background_color: Color,
-    bounds: Bound
+    bounds: Bound,
+    messages: Vec<Box<String>>,
+    max_messages: u32
 }
 
 pub struct TcodMessagesWindowComponent {
     console: OffscreenConsole,
     background_color: Color,
-    bounds: Bound
+    bounds: Bound,
+    messages: Vec<Box<String>>,
+    max_messages: u32
 }
 
 pub struct TcodMapWindowComponent {
     console: OffscreenConsole,
     background_color: Color,
-    bounds: Bound
+    bounds: Bound,
+    messages: Vec<Box<String>>,
+    max_messages: u32
 }
 
 impl TcodStatsWindowComponent {
