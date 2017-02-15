@@ -131,9 +131,9 @@ str is now just always a (immutable) sequence of UTF-8 bytes (of unknown length)
 
 * in static storage: a string literal "foo" is a &str, where the data is hardcoded into the executable and loaded into memory when the program runs.
 
-*inside a heap allocated String: String dereferences to a &str view of the String's data.
+* inside a heap allocated String: String dereferences to a &str view of the String's data.
 
-*on the stack: e.g. the following creates a stack-allocated byte array, and then gets a view of that data as a &str:
+* on the stack: e.g. the following creates a stack-allocated byte array, and then gets a view of that data as a &str:
 ```
 use std::str;
 
