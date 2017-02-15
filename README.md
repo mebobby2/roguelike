@@ -123,6 +123,26 @@ hello(&a)
 ```
 That is, make hello take an immutable reference to A instead.
 
+### String vs str
+
+String is the dynamic heap string type, like Vec: use it when you need to own or modify your string data. (It is the replacement for the old ~str type, which has now been removed.)
+
+str is now just always a (immutable1) sequence of UTF-8 bytes (of unknown length) somewhere in memory. Since the size is unknown, one can only handle it behind a pointer, meaning that str most commonly appears as &str: a reference to some UTF-8 data, normally called a "slice". A slice is just a view onto some data, and that data can be anywhere, e.g.
+
+* in static storage: a string literal "foo" is a &str, where the data is hardcoded into the executable and loaded into memory when the program runs.
+*inside a heap allocated String: String dereferences to a &str view of the String's data.
+*on the stack: e.g. the following creates a stack-allocated byte array, and then gets a view of that data as a &str:
+```
+use std::str;
+
+let x: &[u8] = &['a' as u8, 'b' as u8];
+let stack_str: &str = str::from_utf8(x).unwrap();
+```
+
+In summary, use String if you need owned string data (like passing strings to other tasks, or building them at runtime), and use &str if you only need a view of a string.
+
+(This is identical to the relationship between a vector Vec<T> and a slice &[T], and is similar to the relationship between by-value T and by-reference &T for general types.)
+
 
 
 ## Upto
