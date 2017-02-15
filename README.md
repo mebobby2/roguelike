@@ -127,10 +127,12 @@ That is, make hello take an immutable reference to A instead.
 
 String is the dynamic heap string type, like Vec: use it when you need to own or modify your string data. (It is the replacement for the old ~str type, which has now been removed.)
 
-str is now just always a (immutable1) sequence of UTF-8 bytes (of unknown length) somewhere in memory. Since the size is unknown, one can only handle it behind a pointer, meaning that str most commonly appears as &str: a reference to some UTF-8 data, normally called a "slice". A slice is just a view onto some data, and that data can be anywhere, e.g.
+str is now just always a (immutable) sequence of UTF-8 bytes (of unknown length) somewhere in memory. Since the size is unknown, one can only handle it behind a pointer, meaning that str most commonly appears as &str: a reference to some UTF-8 data, normally called a "slice". A slice is just a view onto some data, and that data can be anywhere, e.g.
 
 * in static storage: a string literal "foo" is a &str, where the data is hardcoded into the executable and loaded into memory when the program runs.
+
 *inside a heap allocated String: String dereferences to a &str view of the String's data.
+
 *on the stack: e.g. the following creates a stack-allocated byte array, and then gets a view of that data as a &str:
 ```
 use std::str;
