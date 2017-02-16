@@ -145,9 +145,19 @@ In summary, use String if you need owned string data (like passing strings to ot
 
 (This is identical to the relationship between a vector Vec<T> and a slice &[T], and is similar to the relationship between by-value T and by-reference &T for general types.)
 
+### &str and &foo[..]
 
+&str is a reference to the entire string. &foo[..] is a slice to the entire. If you want a sub slice, use e.g. &foo[..6]
+
+### usize vs u32
+
+usize is pointer-sized, thus its actual size depends on the architecture your are compiling your program for.
+
+As an example, on a 32 bit x86 computer, usize = u32, while on x86_64 computers, usize = u64.
+
+usize gives you the guarantee to be always big enough to hold any pointer or any offset in a data structure, while u32 can be too small on some architectures.
 
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
-upto: Next we’ll change our attach_window method in TcodRenderComponent so that it renders our messages right before attaching the window
+upto: I also did a big refactor to make my life easier. I started using macros for all the shared code in the different window components

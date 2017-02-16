@@ -65,6 +65,10 @@ impl Game {
 
   pub fn wait_for_keypress(&mut self) -> Key {
     let k = self.rendering_component.wait_for_keypress();
+    match k {
+        Key {printable: '/', .. } => self.input_window.buffer_message("Which direction would you like to attack with your heroic sword? [Press an arrow]"),
+        _ => self.input_window.flush_buffer()
+    }
     Game::set_last_keypress(k);
     return k;
   }

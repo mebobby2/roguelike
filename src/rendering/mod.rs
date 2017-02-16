@@ -51,9 +51,15 @@ impl RenderingComponent for TcodRenderingComponent {
 
     fn attach_window(&mut self, window: &mut Box<WindowComponent>) {
         window.clear();
-        window.print_message(0, 0, TextAlignment::Left, "Sup foo!");
-        window.print_message(0, 1, TextAlignment::Left, "Nothing fool!");
+        let mut line = 0i32;
         let bounds = window.get_bounds();
+        let messages = window.get_messages();
+
+        for message in messages.iter() {
+            window.print_message(0, line, TextAlignment::Left, &message[..]);
+            line = line + 1;
+        }
+
         let console = window.get_console();
 
         tcod::console::blit(&*console,
@@ -61,8 +67,8 @@ impl RenderingComponent for TcodRenderingComponent {
                             (bounds.max.x + 1, bounds.max.y + 1),
                             &mut self.console,
                             (bounds.min.x, bounds.min.y),
-                            1.0,
-                            1.0);
+                            1f32,
+                            1f32);
     }
 }
 
@@ -83,26 +89,30 @@ pub trait WindowComponent {
         console.print_ex(x, y, BackgroundFlag::Set, alignment, text);
     }
 
-    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
-        &mut self.messages
-    }
-
-    fn get_messages(&self) -> Vec<Box<String>> {
-        self.messages.clone()
-    }
-
-    fn get_max_messages(&self) -> u32 {
-        self.max_messages
-    }
-
     fn buffer_message(&mut self, text: &str) {
         let max = self.get_max_messages();
-        let message = String::from_str(text);
+        let message = String::from(text);
         let messages = self.get_mut_messages();
 
-        messages.insert(0, Box::new(messages));
-        messages.truncate(max);
+        messages.insert(0, Box::new(message));
+        messages.truncate(max as usize);
     }
+
+    fn flush_buffer(&mut self) {
+        let max = self.get_max_messages();
+        let messages = self.get_mut_messages();
+
+        for _ in 0..max {
+            messages.insert(0, Box::new(String::from("")));
+        }
+        messages.truncate(max as usize);
+    }
+
+    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>>;
+
+    fn get_messages(&self) -> Vec<Box<String>>;
+
+    fn get_max_messages(&self) -> u32;
 }
 
 pub struct TcodStatsWindowComponent {
@@ -143,11 +153,13 @@ impl TcodStatsWindowComponent {
         let width = bounds.max.x - bounds.min.x + 1;
         let console = OffscreenConsole::new(width, height);
 
-        let red = Color::new(255u8, 0u8, 0u8);
+        let red = Color::new(0u8, 0u8, 0u8);
         TcodStatsWindowComponent {
             console: console,
             background_color: red,
-            bounds: bounds
+            bounds: bounds,
+            messages: vec![],
+            max_messages: 10u32
         }
     }
 }
@@ -158,11 +170,13 @@ impl TcodInputWindowComponent {
         let width = bounds.max.x - bounds.min.x + 1;
         let console = OffscreenConsole::new(width, height);
 
-        let red = Color::new(0u8, 255u8, 0u8);
+        let red = Color::new(0u8, 0u8, 0u8);
         TcodStatsWindowComponent {
             console: console,
             background_color: red,
-            bounds: bounds
+            bounds: bounds,
+            messages: vec![],
+            max_messages: 2u32
         }
     }
 }
@@ -173,11 +187,13 @@ impl TcodMessagesWindowComponent {
         let width = bounds.max.x - bounds.min.x + 1;
         let console = OffscreenConsole::new(width, height);
 
-        let red = Color::new(0u8, 0u8, 255u8);
+        let red = Color::new(0u8, 0u8, 0u8);
         TcodStatsWindowComponent {
             console: console,
             background_color: red,
-            bounds: bounds
+            bounds: bounds,
+            messages: vec![],
+            max_messages: 10u32
         }
     }
 }
@@ -188,11 +204,13 @@ impl TcodMapWindowComponent {
         let width = bounds.max.x - bounds.min.x + 1;
         let console = OffscreenConsole::new(width, height);
 
-        let red = Color::new(255u8, 255u8, 255u8);
+        let red = Color::new(0u8, 0u8, 0u8);
         TcodStatsWindowComponent {
             console: console,
             background_color: red,
-            bounds: bounds
+            bounds: bounds,
+            messages: vec![],
+            max_messages: 10u32
         }
     }
 }
@@ -201,22 +219,70 @@ impl WindowComponent for TcodStatsWindowComponent {
     fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
     fn get_bounds(&self) -> Bound { self.bounds }
     fn get_bg_color(&self) -> Color { self.background_color }
+
+    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
+        &mut self.messages
+    }
+
+    fn get_messages(&self) -> Vec<Box<String>> {
+        self.messages.clone()
+    }
+
+    fn get_max_messages(&self) -> u32 {
+        self.max_messages
+    }
 }
 
 impl WindowComponent for TcodInputWindowComponent {
     fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
     fn get_bounds(&self) -> Bound { self.bounds }
     fn get_bg_color(&self) -> Color { self.background_color }
+
+    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
+        &mut self.messages
+    }
+
+    fn get_messages(&self) -> Vec<Box<String>> {
+        self.messages.clone()
+    }
+
+    fn get_max_messages(&self) -> u32 {
+        self.max_messages
+    }
 }
 
 impl WindowComponent for TcodMessagesWindowComponent {
     fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
     fn get_bounds(&self) -> Bound { self.bounds }
     fn get_bg_color(&self) -> Color { self.background_color }
+
+    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
+        &mut self.messages
+    }
+
+    fn get_messages(&self) -> Vec<Box<String>> {
+        self.messages.clone()
+    }
+
+    fn get_max_messages(&self) -> u32 {
+        self.max_messages
+    }
 }
 
 impl WindowComponent for TcodMapWindowComponent {
     fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
     fn get_bounds(&self) -> Bound { self.bounds }
     fn get_bg_color(&self) -> Color { self.background_color }
+
+    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
+        &mut self.messages
+    }
+
+    fn get_messages(&self) -> Vec<Box<String>> {
+        self.messages.clone()
+    }
+
+    fn get_max_messages(&self) -> u32 {
+        self.max_messages
+    }
 }
