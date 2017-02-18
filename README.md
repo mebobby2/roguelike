@@ -218,6 +218,47 @@ As an example, on a 32 bit x86 computer, usize = u32, while on x86_64 computers,
 
 usize gives you the guarantee to be always big enough to hold any pointer or any offset in a data structure, while u32 can be too small on some architectures.
 
+### Type alias for Enum
+```
+enum One { A, B, C }
+
+type Two = One;
+
+fn main() {
+    // error: no associated item named `B` found for type `One` in the current scope
+    let b = Two::B;
+}
+```
+type alias cannot be used on enum variants.
+The confusing thing is that enum variants are not associated items - because of historical reasons rust is stuck with - and therefore don't work with type (or <Type> syntax, or whatever): this is basically the same reason type does not import a tuple-like struct constructor. Rust might change this.
+
+A hack is to rename the enum type in a use statement:
+```
+enum One { A, B, C }
+
+fn main() {
+    use One as Two;
+    let b = Two::B;
+}
+```
+You can use this in combination with pub use to re-export types under a different identifier:
+```
+mod foo {
+    pub enum One { A, B, C }
+}
+
+mod bar {
+    pub use foo::One as Two;
+}
+
+fn main() {
+    use bar::Two;
+    let b = Two::B;
+}
+```
+
+
+
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
