@@ -222,3 +222,9 @@ usize gives you the guarantee to be always big enough to hold any pointer or any
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
 upto: Leaky Abstraction
+
+Actually, I think I finished all the leaky abstraction section. It involved a huge refactor. So, tasks for next time:
+1. Clean up all un-used imports
+2. Fix bug introduced in the refactor where the input promot is not cleared after the user has inputted
+3. Fix bug (present even before the refactor) where game crashes if messages overflow the window
+4. Go through the leaky abstraction section again to make sure you have covered everything
