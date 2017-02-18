@@ -1,7 +1,7 @@
 use util::{Point, Bound};
-use game::Game;
+use game::{Game, Windows};
 use rendering::RenderingComponent;
-use movement::{RandomMovementComponent, MovementComponent, TcodUserMovementComponent, AggroMovementComponent};
+use movement::{RandomMovementComponent, MovementComponent, UserMovementComponent, AggroMovementComponent};
 
 
 pub struct Actor {
@@ -15,8 +15,8 @@ impl Actor {
         Actor { position: Point {x: x, y: y}, display_char: dc, movement_component: mc }
     }
 
-    pub fn update(&mut self) {
-        self.position = self.movement_component.update(self.position);
+    pub fn update(&mut self, windows: &mut Windows) {
+        self.position = self.movement_component.update(self.position, windows);
     }
 
     pub fn render(&self, rendering_component: &mut Box<RenderingComponent>) {
@@ -35,7 +35,7 @@ impl Actor {
 
     pub fn heroine(bound: Bound) -> Actor {
         let point = Game::get_character_point();
-        let mc: Box<MovementComponent> = Box::new(TcodUserMovementComponent::new(bound));
+        let mc: Box<MovementComponent> = Box::new(UserMovementComponent::new(bound));
         Actor::new(point.x, point.y, '@', mc)
     }
 

@@ -3,15 +3,18 @@ extern crate tcod;
 use self::tcod::input::Key;
 use self::tcod::input::KeyCode::{Up, Down, Left, Right, Number6, Number8, Number5, Shift, Escape};
 
+#[derive(Copy, Clone)]
 pub enum GameKey {
     Printable(char),
     SpecialKey(GameKeyCode)
 }
 
+#[derive(Copy, Clone)]
 pub struct KeyboardInput {
-  key: GameKey
+  pub key: GameKey
 }
 
+#[derive(Copy, Clone)]
 pub enum GameKeyCode {
     // Arrow keys
     Up,
@@ -33,7 +36,7 @@ pub trait InputComponent<T> {
 
 pub struct TcodInputComponent;
 impl TcodInputComponent {
-  fn new() -> TcodInputComponent { TcodInputComponent }
+  pub fn new() -> TcodInputComponent { TcodInputComponent }
 }
 
 impl InputComponent<Key> for TcodInputComponent {

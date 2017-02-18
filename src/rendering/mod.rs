@@ -4,6 +4,7 @@ use self::tcod::{Console, RootConsole, BackgroundFlag, Color, OffscreenConsole, 
 use self::tcod::input::Key;
 
 use util::{Point, Bound};
+use input::{TcodInputComponent, InputComponent, KeyboardInput};
 
 macro_rules! window_component_getters {
     () => {
@@ -59,21 +60,25 @@ pub trait RenderingComponent {
     fn before_render_new_frame(&mut self);
     fn render_object(&mut self, Point, char);
     fn after_render_new_frame(&mut self);
-    fn wait_for_keypress(&mut self) -> Key;
+    fn wait_for_keypress(&mut self) -> KeyboardInput;
     fn window_closed(&mut self) -> bool;
     fn attach_window(&mut self, window: &mut Box<WindowComponent>);
 }
 
 pub struct TcodRenderingComponent {
-    console: RootConsole
+    console: RootConsole,
+    input_component: Box<InputComponent<Key>>
 }
 
 impl TcodRenderingComponent {
     pub fn new(bounds: Bound) -> TcodRenderingComponent {
         let console = RootConsole::initializer().size(bounds.max.x + 1, bounds.max.y + 1).title("Roguelike!").init();
 
+        let ic: Box<InputComponent<Key>> = Box::new(TcodInputComponent::new());
+
         TcodRenderingComponent {
-            console: console
+            console: console,
+            input_component: ic
         }
     }
 }
@@ -91,8 +96,9 @@ impl RenderingComponent for TcodRenderingComponent {
         self.console.flush();
     }
 
-    fn wait_for_keypress(&mut self) -> Key {
-        self.console.wait_for_keypress(true)
+    fn wait_for_keypress(&mut self) -> KeyboardInput {
+        let k = self.console.wait_for_keypress(true);
+        self.input_component.translate_input(k)
     }
 
     fn window_closed(&mut self) -> bool {

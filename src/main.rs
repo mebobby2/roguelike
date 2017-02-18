@@ -3,8 +3,8 @@ extern crate roguelike;
 
 use roguelike::game::Game;
 use roguelike::actor::Actor;
-use tcod::input::Key;
-use tcod::input::KeyCode::{Escape};
+use roguelike::input::GameKeyCode;
+use roguelike::input::GameKey::{SpecialKey};
 
 fn main() {
     let mut game = Game::new();
@@ -23,8 +23,8 @@ fn main() {
         // wait for user input
         let keypress = game.wait_for_keypress();
 
-        match keypress {
-            Key {code: Escape, .. } => game.exit = true,
+        match keypress.key {
+            SpecialKey(GameKeyCode::Escape) => game.exit = true,
             _ => {}
         }
         game.update(&mut npcs, &mut c);
