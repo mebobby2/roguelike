@@ -13,6 +13,7 @@ pub struct Game {
     pub input_window: Box<WindowComponent>,
     pub messages_window: Box<WindowComponent>,
     pub map_window: Box<WindowComponent>,
+    pub game_state: Box<GameState>
 }
 
 static mut LAST_KEYPRESS: Option<Key> = None;
@@ -31,6 +32,8 @@ impl Game {
     let iw: Box<WindowComponent> = Box::new(TcodInputWindowComponent::new(input_bounds));
     let mw: Box<WindowComponent> = Box::new(TcodMessagesWindowComponent::new(message_bounds));
     let maw: Box<WindowComponent> = Box::new(TcodMapWindowComponent::new(map_bounds));
+    let gs: Box<GameState> = Box::new(MovementGameState::new());
+
     Game {
       exit: false,
       window_bounds: total_bounds,
@@ -38,29 +41,23 @@ impl Game {
       stats_window: sw,
       input_window: iw,
       messages_window: mw,
-      map_window: maw
+      map_window: maw,
+      game_state: gs
     }
   }
 
   pub fn render(&mut self, npcs: &Vec<Box<Actor>>, c: &Actor) {
-    self.rendering_component.before_render_new_frame();
-    self.rendering_component.attach_window(&mut self.stats_window);
-    self.rendering_component.attach_window(&mut self.input_window);
-    self.rendering_component.attach_window(&mut self.messages_window);
-    self.rendering_component.attach_window(&mut self.map_window);
-    for i in npcs.iter() {
-        i.render(&mut self.rendering_component);
-    }
-    c.render(&mut self.rendering_component);
-    self.rendering_component.after_render_new_frame();
+    let mut windows = vec![
+      &mut self.stats_window,
+      &mut self.input_window,
+      &mut self.messages_window,
+      &mut self.map_window
+    ];
+    self.game_state.render(&mut self.rendering_component, npcs, c, &mut windows);
   }
 
   pub fn update(&mut self, npcs: &mut Vec<Box<Actor>>, c: &mut Actor) {
-    c.update();
-    Game::set_character_point(c.position);
-    for i in npcs.iter_mut() {
-        i.update();
-    }
+    self.game_state.update(npcs, c);
   }
 
   pub fn wait_for_keypress(&mut self) -> Key {
@@ -87,5 +84,39 @@ impl Game {
 
   pub fn set_character_point(point: Point) {
     unsafe { CHAR_LOCATION = point; }
+  }
+}
+
+pub trait GameState {
+  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor);
+  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Vec<&mut Box<WindowComponent>>);
+}
+
+struct MovementGameState;
+impl MovementGameState {
+  fn new() -> MovementGameState {
+    MovementGameState
+  }
+}
+
+impl GameState for MovementGameState {
+  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor) {
+    character.update();
+    Game::set_character_point(character.position);
+    for npc in npcs.iter_mut() {
+        npc.update();
+    }
+  }
+
+  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Vec<&mut Box<WindowComponent>>) {
+    renderer.before_render_new_frame();
+    for window in windows.iter_mut() {
+      renderer.attach_window(*window);
+    }
+   for npc in npcs.iter() {
+        npc.render(renderer);
+    }
+    character.render(renderer);
+    renderer.after_render_new_frame();
   }
 }

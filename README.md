@@ -47,6 +47,67 @@ struct C {
 
 ```
 
+### Polymorphism (and Box)
+
+Following on from the previous point "Traits are not sized", you cannot reference 'Self' inside a trait if you want to use it in a polymorphism manner.
+
+Example:
+
+```
+struct MovementGameState;
+
+trait GameState {
+  fn new() -> Self;
+  fn update();
+}
+
+impl GameState for MovementGameState {
+  fn new() -> MovementGameState {
+    MovementGameState
+  }
+  fn update() {
+  }
+}
+
+struct Game {
+  game_state: Box<GameState>
+}
+
+```
+
+The above code does not compile. The problem is when we declare the variable game_state on the Game struct as a chunk of memory on the heap, we need to assign the exact memory size for the GameState because the GameState trait references Self. However, since a trait is not sized, we do not know how big it is (we only know how big the structs that implement the trait is), and hence the compiler throws an error.
+
+To get the above code to compile, we have to remove all references to Self from the trait:
+
+```
+struct MovementGameState;
+
+trait GameState {
+  fn update();
+}
+
+impl MovementGameState {
+  fn new() -> MovementGameState {
+    MovementGameState
+  }
+}
+
+impl GameState for MovementGameState {
+  fn update() {
+  }
+}
+
+struct Game {
+  game_state: Box<GameState>
+}
+
+Game {
+  game_state: Box::new(MovementGameState::new());
+}
+```
+
+The above code compiles.
+
 ### Downcasting
 
 We have this:
