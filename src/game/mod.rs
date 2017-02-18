@@ -9,10 +9,7 @@ pub struct Game {
     pub exit: bool,
     pub window_bounds: Bound,
     pub rendering_component: Box<RenderingComponent>,
-    pub stats_window: Box<WindowComponent>,
-    pub input_window: Box<WindowComponent>,
-    pub messages_window: Box<WindowComponent>,
-    pub map_window: Box<WindowComponent>,
+    pub windows: Windows,
     pub game_state: Box<GameState>
 }
 
@@ -32,39 +29,44 @@ impl Game {
     let iw: Box<WindowComponent> = Box::new(TcodInputWindowComponent::new(input_bounds));
     let mw: Box<WindowComponent> = Box::new(TcodMessagesWindowComponent::new(message_bounds));
     let maw: Box<WindowComponent> = Box::new(TcodMapWindowComponent::new(map_bounds));
+
+    let windows = Windows {
+      input: iw,
+      messages: mw,
+      map: maw,
+      stats: sw,
+    };
+
     let gs: Box<GameState> = Box::new(MovementGameState::new());
 
     Game {
       exit: false,
       window_bounds: total_bounds,
       rendering_component: rc,
-      stats_window: sw,
-      input_window: iw,
-      messages_window: mw,
-      map_window: maw,
+      windows: windows,
       game_state: gs
     }
   }
 
   pub fn render(&mut self, npcs: &Vec<Box<Actor>>, c: &Actor) {
-    let mut windows = vec![
-      &mut self.stats_window,
-      &mut self.input_window,
-      &mut self.messages_window,
-      &mut self.map_window
-    ];
-    self.game_state.render(&mut self.rendering_component, npcs, c, &mut windows);
+    self.game_state.render(&mut self.rendering_component, npcs, c, &mut self.windows);
   }
 
   pub fn update(&mut self, npcs: &mut Vec<Box<Actor>>, c: &mut Actor) {
-    self.game_state.update(npcs, c);
+    if self.game_state.should_update_state() {
+      self.game_state.exit();
+      //self.update_state();
+      self.game_state.enter(&mut self.windows);
+    }
+
+    self.game_state.update(npcs, c, &mut self.windows);
   }
 
   pub fn wait_for_keypress(&mut self) -> Key {
     let k = self.rendering_component.wait_for_keypress();
     match k {
-        Key {printable: '/', .. } => self.input_window.buffer_message("Which direction would you like to attack with your heroic sword? [Press an arrow]"),
-        _ => self.input_window.flush_buffer()
+        Key {printable: '/', .. } => self.windows.input.buffer_message("Which direction would you like to attack with your heroic sword? [Press an arrow]"),
+        _ => self.windows.input.flush_buffer()
     }
     Game::set_last_keypress(k);
     return k;
@@ -87,9 +89,33 @@ impl Game {
   }
 }
 
+pub struct Windows {
+  pub stats: Box<WindowComponent>,
+  pub input: Box<WindowComponent>,
+  pub messages: Box<WindowComponent>,
+  pub map: Box<WindowComponent>,
+}
+
+impl Windows {
+  fn all_windows(&mut self) -> Vec<&mut Box<WindowComponent>> {
+    let windows = vec![
+      &mut self.stats,
+      &mut self.input,
+      &mut self.messages,
+      &mut self.map
+    ];
+    return windows;
+  }
+}
+
 pub trait GameState {
-  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor);
-  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Vec<&mut Box<WindowComponent>>);
+  fn enter(&self, &mut Windows) {}
+  fn exit(&self) {}
+
+  fn should_update_state(&self) -> bool;
+
+  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor, windows: &mut Windows);
+  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Windows);
 }
 
 struct MovementGameState;
@@ -100,7 +126,11 @@ impl MovementGameState {
 }
 
 impl GameState for MovementGameState {
-  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor) {
+  fn should_update_state(&self) -> bool {
+    true
+  }
+
+  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor, windows: &mut Windows) {
     character.update();
     Game::set_character_point(character.position);
     for npc in npcs.iter_mut() {
@@ -108,9 +138,9 @@ impl GameState for MovementGameState {
     }
   }
 
-  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Vec<&mut Box<WindowComponent>>) {
+  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Windows) {
     renderer.before_render_new_frame();
-    for window in windows.iter_mut() {
+    for window in windows.all_windows().iter_mut() {
       renderer.attach_window(*window);
     }
    for npc in npcs.iter() {

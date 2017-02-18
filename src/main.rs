@@ -8,11 +8,11 @@ use tcod::input::KeyCode::{Escape};
 
 fn main() {
     let mut game = Game::new();
-    let mut c = Actor::heroine(game.map_window.get_bounds());
+    let mut c = Actor::heroine(game.windows.map.get_bounds());
     let mut npcs: Vec<Box<Actor>> = vec![
-        Box::new(Actor::dog(10, 10, game.map_window.get_bounds())),
-        Box::new(Actor::cat(40, 25, game.map_window.get_bounds())),
-        Box::new(Actor::kobold(20, 20, game.map_window.get_bounds()))
+        Box::new(Actor::dog(10, 10, game.windows.map.get_bounds())),
+        Box::new(Actor::cat(40, 25, game.windows.map.get_bounds())),
+        Box::new(Actor::kobold(20, 20, game.windows.map.get_bounds()))
     ];
 
     // render
