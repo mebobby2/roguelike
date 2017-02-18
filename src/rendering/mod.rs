@@ -5,6 +5,56 @@ use self::tcod::input::Key;
 
 use util::{Point, Bound};
 
+macro_rules! window_component_getters {
+    () => {
+        fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
+        fn get_bounds(&self) -> Bound { self.bounds }
+        fn get_bg_color(&self) -> Color { self.background_color }
+
+        fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
+            &mut self.messages
+        }
+
+        fn get_messages(&self) -> Vec<Box<String>> {
+            self.messages.clone()
+        }
+
+        fn get_max_messages(&self) -> u32 {
+            self.max_messages
+        }
+    };
+}
+
+macro_rules! window_component_def {
+    ($name:ident) => {
+        pub struct $name {
+            console: OffscreenConsole,
+            background_color: Color,
+            bounds: Bound,
+            messages: Vec<Box<String>>,
+            max_messages: u32
+        }
+    };
+}
+
+macro_rules! window_component_init {
+    ($name:ident, $color:expr, $max_messages:expr) => {
+        pub fn new(bounds: Bound) -> $name {
+            let height = bounds.max.y - bounds.min.y + 1;
+            let width = bounds.max.x - bounds.min.x + 1;
+            let console = OffscreenConsole::new(width, height);
+
+            $name {
+                console: console,
+                background_color: $color,
+                bounds: bounds,
+                messages: vec![],
+                max_messages: $max_messages
+            }
+        }
+    };
+}
+
 pub trait RenderingComponent {
     fn before_render_new_frame(&mut self);
     fn render_object(&mut self, Point, char);
@@ -115,174 +165,34 @@ pub trait WindowComponent {
     fn get_max_messages(&self) -> u32;
 }
 
-pub struct TcodStatsWindowComponent {
-    console: OffscreenConsole,
-    background_color: Color,
-    bounds: Bound,
-    messages: Vec<Box<String>>,
-    max_messages: u32
-}
-
-pub struct TcodInputWindowComponent {
-    console: OffscreenConsole,
-    background_color: Color,
-    bounds: Bound,
-    messages: Vec<Box<String>>,
-    max_messages: u32
-}
-
-pub struct TcodMessagesWindowComponent {
-    console: OffscreenConsole,
-    background_color: Color,
-    bounds: Bound,
-    messages: Vec<Box<String>>,
-    max_messages: u32
-}
-
-pub struct TcodMapWindowComponent {
-    console: OffscreenConsole,
-    background_color: Color,
-    bounds: Bound,
-    messages: Vec<Box<String>>,
-    max_messages: u32
-}
-
+window_component_def!(TcodStatsWindowComponent);
 impl TcodStatsWindowComponent {
-    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
-        let height = bounds.max.y - bounds.min.y + 1;
-        let width = bounds.max.x - bounds.min.x + 1;
-        let console = OffscreenConsole::new(width, height);
-
-        let red = Color::new(0u8, 0u8, 0u8);
-        TcodStatsWindowComponent {
-            console: console,
-            background_color: red,
-            bounds: bounds,
-            messages: vec![],
-            max_messages: 10u32
-        }
-    }
+    window_component_init!(TcodStatsWindowComponent, Color::new(0u8, 0u8, 0u8), 10u32);
 }
-
-impl TcodInputWindowComponent {
-    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
-        let height = bounds.max.y - bounds.min.y + 1;
-        let width = bounds.max.x - bounds.min.x + 1;
-        let console = OffscreenConsole::new(width, height);
-
-        let red = Color::new(0u8, 0u8, 0u8);
-        TcodStatsWindowComponent {
-            console: console,
-            background_color: red,
-            bounds: bounds,
-            messages: vec![],
-            max_messages: 2u32
-        }
-    }
-}
-
-impl TcodMessagesWindowComponent {
-    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
-        let height = bounds.max.y - bounds.min.y + 1;
-        let width = bounds.max.x - bounds.min.x + 1;
-        let console = OffscreenConsole::new(width, height);
-
-        let red = Color::new(0u8, 0u8, 0u8);
-        TcodStatsWindowComponent {
-            console: console,
-            background_color: red,
-            bounds: bounds,
-            messages: vec![],
-            max_messages: 10u32
-        }
-    }
-}
-
-impl TcodMapWindowComponent {
-    pub fn new(bounds: Bound) -> TcodStatsWindowComponent {
-        let height = bounds.max.y - bounds.min.y + 1;
-        let width = bounds.max.x - bounds.min.x + 1;
-        let console = OffscreenConsole::new(width, height);
-
-        let red = Color::new(0u8, 0u8, 0u8);
-        TcodStatsWindowComponent {
-            console: console,
-            background_color: red,
-            bounds: bounds,
-            messages: vec![],
-            max_messages: 10u32
-        }
-    }
-}
-
 impl WindowComponent for TcodStatsWindowComponent {
-    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
-    fn get_bounds(&self) -> Bound { self.bounds }
-    fn get_bg_color(&self) -> Color { self.background_color }
-
-    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
-        &mut self.messages
-    }
-
-    fn get_messages(&self) -> Vec<Box<String>> {
-        self.messages.clone()
-    }
-
-    fn get_max_messages(&self) -> u32 {
-        self.max_messages
-    }
+    window_component_getters!();
 }
 
+window_component_def!(TcodInputWindowComponent);
+impl TcodInputWindowComponent {
+    window_component_init!(TcodInputWindowComponent, Color::new(0u8, 0u8, 0u8), 2u32);
+}
 impl WindowComponent for TcodInputWindowComponent {
-    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
-    fn get_bounds(&self) -> Bound { self.bounds }
-    fn get_bg_color(&self) -> Color { self.background_color }
-
-    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
-        &mut self.messages
-    }
-
-    fn get_messages(&self) -> Vec<Box<String>> {
-        self.messages.clone()
-    }
-
-    fn get_max_messages(&self) -> u32 {
-        self.max_messages
-    }
+    window_component_getters!();
 }
 
+window_component_def!(TcodMessagesWindowComponent);
+impl TcodMessagesWindowComponent {
+    window_component_init!(TcodMessagesWindowComponent, Color::new(0u8, 0u8, 0u8), 10u32);
+}
 impl WindowComponent for TcodMessagesWindowComponent {
-    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
-    fn get_bounds(&self) -> Bound { self.bounds }
-    fn get_bg_color(&self) -> Color { self.background_color }
-
-    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
-        &mut self.messages
-    }
-
-    fn get_messages(&self) -> Vec<Box<String>> {
-        self.messages.clone()
-    }
-
-    fn get_max_messages(&self) -> u32 {
-        self.max_messages
-    }
+    window_component_getters!();
 }
 
+window_component_def!(TcodMapWindowComponent);
+impl TcodMapWindowComponent {
+    window_component_init!(TcodMapWindowComponent, Color::new(0u8, 0u8, 0u8), 10u32);
+}
 impl WindowComponent for TcodMapWindowComponent {
-    fn get_console(&mut self) -> &mut OffscreenConsole { &mut self.console }
-    fn get_bounds(&self) -> Bound { self.bounds }
-    fn get_bg_color(&self) -> Color { self.background_color }
-
-    fn get_mut_messages(&mut self) -> &mut Vec<Box<String>> {
-        &mut self.messages
-    }
-
-    fn get_messages(&self) -> Vec<Box<String>> {
-        self.messages.clone()
-    }
-
-    fn get_max_messages(&self) -> u32 {
-        self.max_messages
-    }
+    window_component_getters!();
 }
