@@ -1,6 +1,7 @@
 extern crate tcod;
 
 use self::tcod::input::Key;
+use self::tcod::input::KeyCode::{Up, Down, Left, Right};
 use util::{Bound, Point};
 use rendering::{RenderingComponent, TcodRenderingComponent, WindowComponent, TcodStatsWindowComponent, TcodInputWindowComponent, TcodMessagesWindowComponent, TcodMapWindowComponent};
 use actor::Actor;
@@ -55,7 +56,7 @@ impl Game {
   pub fn update(&mut self, npcs: &mut Vec<Box<Actor>>, c: &mut Actor) {
     if self.game_state.should_update_state() {
       self.game_state.exit();
-      //self.update_state();
+      self.update_state();
       self.game_state.enter(&mut self.windows);
     }
 
@@ -70,6 +71,17 @@ impl Game {
     }
     Game::set_last_keypress(k);
     return k;
+  }
+
+  fn update_state(&mut self) {
+    match Game::get_last_keypress() {
+      Some(ks) => {
+        match ks {
+
+        }
+      },
+      _ => {}
+    }
   }
 
   pub fn get_last_keypress() -> Option<Key> {
@@ -115,7 +127,18 @@ pub trait GameState {
   fn should_update_state(&self) -> bool;
 
   fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor, windows: &mut Windows);
-  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Windows);
+
+  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Windows) {
+    renderer.before_render_new_frame();
+    for window in windows.all_windows().iter_mut() {
+      renderer.attach_window(*window);
+    }
+    for npc in npcs.iter() {
+        npc.render(renderer);
+    }
+    character.render(renderer);
+    renderer.after_render_new_frame();
+  }
 }
 
 struct MovementGameState;
@@ -137,16 +160,71 @@ impl GameState for MovementGameState {
         npc.update();
     }
   }
+}
 
-  fn render(&mut self, renderer: &mut Box<RenderingComponent>, npcs: &Vec<Box<Actor>>, character: &Actor, windows: &mut Windows) {
-    renderer.before_render_new_frame();
-    for window in windows.all_windows().iter_mut() {
-      renderer.attach_window(*window);
+struct AttackInputGameState {
+  should_update_state: bool,
+  weapon: String
+}
+impl AttackInputGameState {
+  fn new() -> AttackInputGameState {
+    AttackInputGameState {
+      should_update_state: false,
+      weapon: "".to_string()
     }
-   for npc in npcs.iter() {
-        npc.render(renderer);
-    }
-    character.render(renderer);
-    renderer.after_render_new_frame();
   }
 }
+
+impl GameState for AttackInputGameState {
+  fn should_update_state(&self) -> bool {
+    self.should_update_state
+  }
+
+  fn enter(&self, windows: &mut Windows) {
+    windows.input.flush_buffer();
+    let mut msg = "Which direction do you want to attack with".to_string();
+    msg.push_str(self.weapon.as_slice());
+    msg.push_str("? [Use the arrow keys to answer]");
+    windows.input.buffer_message(msg.as_slice());
+  }
+
+  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor, windows: &mut Windows) {
+    match Game::get_last_keypress {
+      Some(ks) => {
+        let mut msg = "You attack ".to_string();
+        match ks {
+          Key {code: Up, .. } => {
+            msg.push_str("up");
+            self.should_update_state = true;
+          },
+          Key {code: Down, .. } => {
+            msg.push_str("down");
+            self.should_update_state = true;
+          },
+          Key {code: Left, .. } => {
+            msg.push_str("left");
+            self.should_update_state = true;
+          },
+          Key {code: Right, .. } => {
+            msg.push_str("right");
+            self.should_update_state = true;
+          },
+          _ => {}
+        }
+
+        if self.should_update_state {
+          msg.push_str(" with your ");
+          msg.push_str(self.weapon.as_slice());
+          msg.push_str("!");
+          windows.messages.buffer_message(msg.as_slice());
+        }
+      },
+      _ => {},
+    }
+  }
+}
+
+
+
+
+

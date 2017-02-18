@@ -221,4 +221,4 @@ usize gives you the guarantee to be always big enough to hold any pointer or any
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
-upto: I also did a big refactor to make my life easier. I started using macros for all the shared code in the different window components
+upto: The last thing we need to do is add a method to game, Game#update_state which will decide which state to use. This method is a bit long, but I’ll explain why after
