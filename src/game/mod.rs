@@ -53,7 +53,7 @@ impl Game {
 
   pub fn update(&mut self, npcs: &mut Vec<Box<Actor>>, c: &mut Actor) {
     if self.game_state.should_update_state() {
-      self.game_state.exit();
+      self.game_state.exit(&mut self.windows);
       self.update_state();
       self.game_state.enter(&mut self.windows);
     }
@@ -139,7 +139,7 @@ impl Windows {
 
 pub trait GameState {
   fn enter(&self, &mut Windows) {}
-  fn exit(&self) {}
+  fn exit(&self, &mut Windows) {}
 
   fn should_update_state(&self) -> bool;
 
@@ -238,6 +238,10 @@ impl GameState for AttackInputGameState {
       },
       _ => {},
     }
+  }
+
+  fn exit(&self, windows: &mut Windows) {
+    windows.input.flush_buffer();
   }
 }
 
