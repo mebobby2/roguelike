@@ -1,7 +1,3 @@
-extern crate tcod;
-
-use self::tcod::input::Key;
-use self::tcod::input::KeyCode::{Up, Down, Left, Right, Number6, Number8, Number5, Shift};
 use util::{Bound, Point};
 use rendering::{RenderingComponent, TcodRenderingComponent, WindowComponent, TcodStatsWindowComponent, TcodInputWindowComponent, TcodMessagesWindowComponent, TcodMapWindowComponent};
 use actor::Actor;
@@ -209,7 +205,7 @@ impl GameState for AttackInputGameState {
     windows.input.buffer_message(&msg);
   }
 
-  fn update(&mut self, npcs: &mut Vec<Box<Actor>>, character: &mut Actor, windows: &mut Windows) {
+  fn update(&mut self, _npcs: &mut Vec<Box<Actor>>, _character: &mut Actor, windows: &mut Windows) {
     match Game::get_last_keypress() {
       Some(ks) => {
         let mut msg = "You attack ".to_string();

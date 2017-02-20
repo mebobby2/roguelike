@@ -1,12 +1,9 @@
 extern crate rand;
-extern crate tcod;
 
 use util::{Point, Bound, Contains, XPointRelation, YPointRelation, PointEquality};
 use game::{Game, Windows};
 use self::rand::Rng;
 
-use self::tcod::input::KeyCode::{Up, Down, Left, Right};
-use self::tcod::input::Key;
 use input::GameKey::{SpecialKey};
 use input::GameKeyCode;
 
