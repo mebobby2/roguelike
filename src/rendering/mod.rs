@@ -189,7 +189,7 @@ impl WindowComponent for TcodInputWindowComponent {
 
 window_component_def!(TcodMessagesWindowComponent);
 impl TcodMessagesWindowComponent {
-    window_component_init!(TcodMessagesWindowComponent, Color::new(0u8, 0u8, 0u8), 10u32);
+    window_component_init!(TcodMessagesWindowComponent, Color::new(0u8, 0u8, 0u8), 9u32);
 }
 impl WindowComponent for TcodMessagesWindowComponent {
     window_component_getters!();
