@@ -261,9 +261,4 @@ fn main() {
 
 ## Upto
 
-https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-4
-upto: Leaky Abstraction
-
-Actually, I think I finished all the leaky abstraction section. It involved a huge refactor. So, tasks for next time:
-3. Fix bug (present even before the refactor) where game crashes if messages overflow the window
-4. Go through the leaky abstraction section again to make sure you have covered everything
+https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-5
