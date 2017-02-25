@@ -2,6 +2,9 @@ use rendering::windows::Windows;
 use rendering::renderers::RenderingComponent;
 use util::{Point, Bound};
 use actor::Actor;
+use game::MoveInfo;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct Maps {
   pub terrain: Box<Map>,
@@ -11,11 +14,11 @@ pub struct Maps {
 }
 
 impl Maps {
-  pub fn new(size: Bound) -> Maps {
-    let terrain = Box::new(Map::new(size));
-    let enemies = Box::new(Map::new(size));
-    let friends = Box::new(Map::new(size));
-    let pcs = Box::new(Map::new(size));
+  pub fn new(move_info: Rc<RefCell<MoveInfo>>) -> Maps {
+    let terrain = Box::new(Map::new(move_info.clone()));
+    let enemies = Box::new(Map::new(move_info.clone()));
+    let friends = Box::new(Map::new(move_info.clone()));
+    let pcs = Box::new(Map::new(move_info.clone()));
 
     Maps {
       friends: friends,
@@ -33,14 +36,14 @@ impl Maps {
   }
 
   pub fn render(&mut self, renderer: &mut Box<RenderingComponent>) {
-    self.terrain.renderer(renderer);
-    self.friends.renderer(renderer);
-    self.enemies.renderer(renderer);
-    self.pcs.renderer(renderer);
+    self.terrain.render(renderer);
+    self.friends.render(renderer);
+    self.enemies.render(renderer);
+    self.pcs.render(renderer);
   }
 
   pub fn enemy_at(&self, point: Point) -> Option<&Box<Actor>> {
-    let enemies_at_point = &self.enemies.content[point.x][point.y];
+    let enemies_at_point = &self.enemies.content[point.x as usize][point.y as usize];
     if enemies_at_point.len() > 0 {
       Some(&enemies_at_point[0])
     } else {
@@ -51,23 +54,28 @@ impl Maps {
 
 pub struct Map {
   pub content: Vec<Vec<Vec<Box<Actor>>>>,
-  pub size: Bound
+  pub size: Bound,
+  pub move_info: Rc<RefCell<MoveInfo>>
 }
 
 impl Map {
-  pub fn new(size: Bound) -> Map {
+  pub fn new(move_info: Rc<RefCell<MoveInfo>>) -> Map {
+    let size = {
+      move_info.borrow().deref().bounds
+    };
     let content = Map::init_contents(size);
     Map {
       content: content,
-      size: size
+      size: size,
+      move_info: move_info
     }
   }
 
   fn init_contents(size: Bound) -> Vec<Vec<Vec<Box<Actor>>>> {
-    let mut contents = Vec<Vec<Vec<Box<Actor>>>> = vec![];
-    for _ in range(0, size.max.x) {
+    let mut contents: Vec<Vec<Vec<Box<Actor>>>> = vec![];
+    for _ in 0..size.max.x {
       let mut x_vec: Vec<Vec<Box<Actor>>> = vec![];
-      for _ in range(0, size.max.y) {
+      for _ in 0..size.max.y {
         let y_vec: Vec<Box<Actor>> = vec![];
         x_vec.push(y_vec);
       }
@@ -87,7 +95,7 @@ impl Map {
         for actor in y_iter.iter_mut() {
           actor.update(windows);
           if actor.is_pc {
-            Game::set_character_point(actor.position);
+            { self.move_info.borrow_mut().deref_mut().char_location = actor.position };
           }
           let point = actor.position;
           let new_actor = actor.clone();

@@ -1,12 +1,19 @@
 extern crate rand;
+extern crate core;
 
 use util::{Point, Bound, Contains, XPointRelation, YPointRelation, PointEquality};
 use game::Game;
 use rendering::windows::Windows;
 use self::rand::Rng;
+use game::MoveInfo;
 
 use input::GameKey::{SpecialKey};
 use input::GameKeyCode;
+
+use std::cell::RefCell;
+use std::rc::Rc;
+
+use self::core::ops::Deref;
 
 pub trait MovementComponent {
   fn update(&self, Point, &mut Windows) -> Point;
@@ -14,12 +21,12 @@ pub trait MovementComponent {
 }
 
 pub struct RandomMovementComponent {
-  window_bounds: Bound
+  move_info: Rc<RefCell<MoveInfo>>
 }
 
 impl RandomMovementComponent {
-  pub fn new(bound: Bound) -> RandomMovementComponent {
-    RandomMovementComponent { window_bounds: bound }
+  pub fn new(move_info: Rc<RefCell<MoveInfo>>) -> RandomMovementComponent {
+    RandomMovementComponent { move_info: move_info }
   }
 }
 
@@ -27,14 +34,16 @@ impl MovementComponent for RandomMovementComponent {
   fn update(&self, point: Point, _: &mut Windows) -> Point {
     let mut offset = Point { x: point.x, y: point.y };
     let offset_x = rand::thread_rng().gen_range(0, 3i32) - 1;
-
-    match self.window_bounds.contains(offset.offset_x(offset_x)) {
+    let bound = {
+      self.move_info.borrow().deref().bounds
+    };
+    match bound.contains(offset.offset_x(offset_x)) {
         Contains::DoesContain => offset = offset.offset_x(offset_x),
         Contains::DoesNotContain => { return point; },
     }
 
     let offset_y = rand::thread_rng().gen_range(0, 3i32) - 1;
-    match self.window_bounds.contains(offset.offset_y(offset_y)) {
+    match bound.contains(offset.offset_y(offset_y)) {
         Contains::DoesContain => offset = offset.offset_y(offset_y),
         Contains::DoesNotContain => { return point;},
     }
@@ -43,17 +52,17 @@ impl MovementComponent for RandomMovementComponent {
   }
 
   fn box_clone(&self) -> Box<MovementComponent> {
-    Box::new(RandomMovementComponent { window_bounds: self.window_bounds })
+    Box::new(RandomMovementComponent { move_info: self.move_info })
   }
 }
 
 pub struct UserMovementComponent {
-  window_bounds: Bound
+  move_info: Rc<RefCell<MoveInfo>>
 }
 
 impl UserMovementComponent {
-  pub fn new(bound: Bound) -> UserMovementComponent {
-    UserMovementComponent { window_bounds: bound }
+  pub fn new(move_info: Rc<RefCell<MoveInfo>>) -> UserMovementComponent {
+    UserMovementComponent { move_info: move_info }
   }
 }
 
@@ -62,7 +71,7 @@ impl MovementComponent for UserMovementComponent {
     let mut offset = Point { x: point.x, y: point.y };
     let last_keypress = {
       self.move_info.borrow().deref().last_keypress
-    }
+    };
     offset = match last_keypress {
       Some(keypress) => {
         match keypress.key {
@@ -84,7 +93,11 @@ impl MovementComponent for UserMovementComponent {
       None => offset
     };
 
-    match self.window_bounds.contains(offset) {
+    let bound = {
+      self.move_info.borrow().deref().bounds
+    };
+
+    match bound.contains(offset) {
       Contains::DoesContain => { offset }
       Contains::DoesNotContain => {
         windows.messages.buffer_message("You can't move that way!");
@@ -94,25 +107,25 @@ impl MovementComponent for UserMovementComponent {
   }
 
   fn box_clone(&self) -> Box<MovementComponent> {
-    Box::new(UserMovementComponent { window_bounds: self.window_bounds })
+    Box::new(UserMovementComponent { move_info: self.move_info })
   }
 }
 
 pub struct AggroMovementComponent {
-  window_bounds: Bound
+  move_info: Rc<RefCell<MoveInfo>>
 }
 
 impl AggroMovementComponent {
-  pub fn new(bound: Bound) -> AggroMovementComponent {
-    AggroMovementComponent { window_bounds: bound }
+  pub fn new(move_info: Rc<RefCell<MoveInfo>>) -> AggroMovementComponent {
+    AggroMovementComponent { move_info: move_info }
   }
 }
 
 impl MovementComponent for AggroMovementComponent {
   fn update(&self, point: Point, _: &mut Windows) -> Point {
     let char_point = {
-      move_info.borrow().deref().char_location;
-    }
+      self.move_info.borrow().deref().char_location
+    };
     let mut offset = Point { x: 0, y: 0 };
 
     match point.compare_x(char_point) {
@@ -130,7 +143,10 @@ impl MovementComponent for AggroMovementComponent {
     match point.offset(offset).compare(char_point) {
       PointEquality::PointsEqual => point,
       PointEquality::PointsNotEqual  => {
-        match self.window_bounds.contains(point.offset(offset)) {
+        let bound = {
+          self.move_info.borrow().deref().bounds
+        };
+        match bound.contains(point.offset(offset)) {
           Contains::DoesContain => point.offset(offset),
           Contains::DoesNotContain => point
         }
@@ -139,6 +155,6 @@ impl MovementComponent for AggroMovementComponent {
   }
 
   fn box_clone(&self) -> Box<MovementComponent> {
-    Box::new(AggroMovementComponent { window_bounds: self.window_bounds })
+    Box::new(AggroMovementComponent { move_info: self.move_info })
   }
 }

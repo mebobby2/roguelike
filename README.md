@@ -257,6 +257,22 @@ fn main() {
 }
 ```
 
+### Accessing vectors
+
+Vectors can only be accessed using usize
+```
+let v = vec![1, 2, 3, 4, 5];
+
+let i: usize = 0;
+let j: i32 = 0;
+
+// Works:
+v[i];
+
+// Doesn’t:
+v[j];
+
+```
 
 
 ## Upto

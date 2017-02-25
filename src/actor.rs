@@ -1,11 +1,15 @@
+extern crate core;
+
 use rendering::renderers::RenderingComponent;
 use rendering::windows::Windows;
 use movement::{RandomMovementComponent, MovementComponent, UserMovementComponent, AggroMovementComponent};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use util::Point;
+use util::{Point, Bound};
 use game::MoveInfo;
+
+use self::core::ops::Deref;
 
 pub struct Actor {
     pub position: Point,
@@ -39,26 +43,26 @@ impl Actor {
         rendering_component.render_object(self.position, self.display_char);
     }
 
-    pub fn dog(x: i32, y: i32, bound: Bound) -> Actor {
-        let mc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(bound));
+    pub fn dog(x: i32, y: i32, move_info: Rc<RefCell<MoveInfo>>) -> Actor {
+        let mc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(move_info));
         Actor::new(x, y, 'd', mc, false)
     }
 
-    pub fn cat(x: i32, y: i32, bound: Bound) -> Actor {
-        let mc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(bound));
+    pub fn cat(x: i32, y: i32, move_info: Rc<RefCell<MoveInfo>>) -> Actor {
+        let mc: Box<MovementComponent> = Box::new(RandomMovementComponent::new(move_info));
         Actor::new(x, y, 'c', mc, false)
     }
 
-    pub fn heroine(bound: Bound) -> Actor {
+    pub fn heroine(move_info: Rc<RefCell<MoveInfo>>) -> Actor {
         let point = {
-            move_info.borrow().deref().char_location;
-        }
-        let mc: Box<MovementComponent> = Box::new(UserMovementComponent::new(bound));
+            move_info.borrow().deref().char_location
+        };
+        let mc: Box<MovementComponent> = Box::new(UserMovementComponent::new(move_info));
         Actor::new(point.x, point.y, '@', mc, true)
     }
 
-    pub fn kobold(x: i32, y: i32, bound: Bound) -> Actor {
-        let mc: Box<MovementComponent> = Box::new(AggroMovementComponent::new(bound));
+    pub fn kobold(x: i32, y: i32, move_info: Rc<RefCell<MoveInfo>>) -> Actor {
+        let mc: Box<MovementComponent> = Box::new(AggroMovementComponent::new(move_info));
         Actor::new(x, y, 'k', mc, false)
     }
 }
