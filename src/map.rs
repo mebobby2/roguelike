@@ -116,7 +116,7 @@ impl Map {
       for (y, y_iter) in x_iter.iter_mut().enumerate() {
         for actor in y_iter.iter_mut() {
           let point = Point::new(x as i32, y as i32);
-          renderer.render_object(point, actor.display_char);
+          renderer.render_object(point, actor.display_char, actor.foreground, actor.background);
         }
       }
     }

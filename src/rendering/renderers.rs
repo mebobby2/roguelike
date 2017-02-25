@@ -1,19 +1,28 @@
 extern crate tcod;
 
-use self::tcod::{Console, RootConsole, BackgroundFlag, TextAlignment};
+use self::tcod::{Console, RootConsole, TextAlignment};
 use self::tcod::input::Key;
 
 use util::{Point, Bound};
 use input::{TcodInputComponent, InputComponent, KeyboardInput};
 use rendering::windows::WindowComponent;
 
+#[derive(Copy, Clone)]
+pub enum Color {
+    Red,
+    Blue,
+    Black,
+    White
+}
+
 pub trait RenderingComponent {
     fn before_render_new_frame(&mut self);
-    fn render_object(&mut self, Point, char);
+    fn render_object(&mut self, Point, char, Color, Color);
     fn after_render_new_frame(&mut self);
     fn wait_for_keypress(&mut self) -> KeyboardInput;
     fn window_closed(&mut self) -> bool;
     fn attach_window(&mut self, window: &mut Box<WindowComponent>);
+    fn translate_color(&self, Color) -> tcod::Color;
 }
 
 pub struct TcodRenderingComponent {
@@ -39,8 +48,10 @@ impl RenderingComponent for TcodRenderingComponent {
         self.console.clear();
     }
 
-    fn render_object(&mut self, position: Point, symbol: char) {
-        self.console.put_char(position.x, position.y, symbol, BackgroundFlag::Set);
+    fn render_object(&mut self, position: Point, symbol: char, foreground: Color, background: Color) {
+        let f = self.translate_color(foreground);
+        let b = self.translate_color(background);
+        self.console.put_char_ex(position.x, position.y, symbol, f, b);
     }
 
     fn after_render_new_frame(&mut self) {
@@ -76,5 +87,14 @@ impl RenderingComponent for TcodRenderingComponent {
                             (bounds.min.x, bounds.min.y),
                             1f32,
                             1f32);
+    }
+
+    fn translate_color(&self, input: Color) -> tcod::Color {
+        match input {
+            Color::Red   => tcod::Color::new(255u8, 0u8, 0u8),
+            Color::Blue  => tcod::Color::new(0u8, 0u8, 255u8),
+            Color::White => tcod::Color::new(255u8, 255u8, 255u8),
+            Color::Black => tcod::Color::new(0u8, 0u8, 0u8)
+        }
     }
 }
