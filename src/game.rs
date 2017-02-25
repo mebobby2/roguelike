@@ -19,6 +19,11 @@ use game_states::{GameState, MovementGameState, AttackInputGameState};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use combat::{
+  Boomerang,
+  Sword,
+};
+
 use self::core::ops::{Deref, DerefMut};
 
 pub struct MoveInfo {
@@ -123,23 +128,23 @@ impl Game {
       Some(ks) => {
         match ks.key {
           Printable('/') => {
-            let mut is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new());
-            is.weapon = "Heroic Sword".to_string();
+            let w = Box::new(Sword::new());
+            let is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new_with_weapon(w));
             self.game_state = is as Box<GameState>;
           },
           Printable('^') => {
-            let mut is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new());
-            is.weapon = "Boomerange".to_string();
+            let w = Box::new(Boomerang::new());
+            let is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new_with_weapon(w));
             self.game_state = is as Box<GameState>;
           },
           Printable('*') => {
-            let mut is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new());
-            is.weapon = "Deadly Bomb".to_string();
+            let w = Box::new(Boomerang::new());
+            let is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new_with_weapon(w));
             self.game_state = is as Box<GameState>;
           },
           Printable('%') => {
-            let mut is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new());
-            is.weapon = "Delicious Lettuce".to_string();
+            let w = Box::new(Boomerang::new());
+            let is: Box<AttackInputGameState> = Box::new(AttackInputGameState::new_with_weapon(w));
             self.game_state = is as Box<GameState>;
           },
           _ => {

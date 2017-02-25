@@ -10,6 +10,7 @@ use game::MoveInfo;
 use input::GameKey::{SpecialKey};
 use input::{GameKeyCode};
 use util::Point;
+use combat::{Weapon, Boomerang};
 
 use self::core::ops::Deref;
 
@@ -66,13 +67,21 @@ impl GameState for MovementGameState {
 
 pub struct AttackInputGameState {
   should_update_state: bool,
-  pub weapon: String
+  pub weapon: Box<Weapon>
 }
 impl AttackInputGameState {
   pub fn new() -> AttackInputGameState {
+    let weapon = Box::new(Boomerang::new());
     AttackInputGameState {
       should_update_state: false,
-      weapon: "".to_string()
+      weapon: weapon
+    }
+  }
+
+  pub fn new_with_weapon(weapon: Box<Weapon + 'static>) -> AttackInputGameState {
+    AttackInputGameState {
+        should_update_state: false,
+        weapon: weapon
     }
   }
 }
@@ -85,7 +94,7 @@ impl GameState for AttackInputGameState {
   fn enter(&self, windows: &mut Windows) {
     windows.input.flush_buffer();
     let mut msg = "Which direction do you want to attack with ".to_string();
-    msg.push_str(&self.weapon);
+    msg.push_str(&self.weapon.get_name());
     msg.push_str("? [Use the arrow keys to answer]");
     windows.input.buffer_message(&msg);
   }
@@ -127,10 +136,19 @@ impl GameState for AttackInputGameState {
 
         if self.should_update_state {
           match maps.enemy_at(point) {
-            Some(_) => {
+            Some(enemy) => {
+              // msg.push_str(" with your ");
+              // msg.push_str(&self.weapon);
+              // msg.push_str("!");
+              // windows.messages.buffer_message(&msg);
+
+              let pc = maps.pcs.actor_at(char_point).unwrap();
+              println!("{}", pc.display_char);
               msg.push_str(" with your ");
-              msg.push_str(&self.weapon);
-              msg.push_str("!");
+              msg.push_str(&self.weapon.get_name());
+              msg.push_str(" for ");
+              msg.push_str(&self.weapon.deal_damage(enemy).to_string());
+              msg.push_str(" points of damage!");
               windows.messages.buffer_message(&msg);
             },
             None => {

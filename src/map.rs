@@ -121,4 +121,13 @@ impl Map {
       }
     }
   }
+
+  pub fn actor_at(&self, point: Point) -> Option<&Box<Actor>> {
+      let ref location = self.content[point.x as usize][point.y as usize];
+      if location.len() > 0 {
+          Some(&location[0])
+      } else {
+          None
+      }
+  }
 }

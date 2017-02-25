@@ -273,9 +273,3 @@ v[i];
 v[j];
 
 ```
-
-
-## Upto
-
-Follow this commit onwards: https://github.com/jaredonline/rust-roguelike/commit/791b92af1e171160722ce02ce94861ed60142be3
-to implement combat and damage
