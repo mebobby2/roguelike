@@ -6,16 +6,16 @@ use movement::{RandomMovementComponent, MovementComponent, UserMovementComponent
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use util::{Point, Bound};
+use util::Point;
 use game::MoveInfo;
 
 use self::core::ops::Deref;
 
 pub struct Actor {
     pub position: Point,
-    display_char: char,
+    pub display_char: char,
     movement_component: Box<MovementComponent>,
-    is_pc: bool
+    pub is_pc: bool
 }
 
 impl Clone for Actor {

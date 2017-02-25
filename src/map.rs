@@ -1,3 +1,5 @@
+extern crate core;
+
 use rendering::windows::Windows;
 use rendering::renderers::RenderingComponent;
 use util::{Point, Bound};
@@ -5,6 +7,8 @@ use actor::Actor;
 use game::MoveInfo;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+use self::core::ops::{Deref, DerefMut};
 
 pub struct Maps {
   pub terrain: Box<Map>,
@@ -85,12 +89,12 @@ impl Map {
   }
 
   pub fn push_actor(&mut self, point: Point, actor: Box<Actor>) {
-    self.contents.get_mut(point.x).get_mut(point.y).push(actor);
+    self.content[point.x as usize][point.y as usize].push(actor);
   }
 
   pub fn update(&mut self, windows: &mut Windows) {
     let mut new_content = Map::init_contents(self.size);
-    for x_iter in self.contents.iter_mut() {
+    for x_iter in self.content.iter_mut() {
       for y_iter in x_iter.iter_mut() {
         for actor in y_iter.iter_mut() {
           actor.update(windows);
@@ -99,7 +103,7 @@ impl Map {
           }
           let point = actor.position;
           let new_actor = actor.clone();
-          new_content.get_mut(point.x).get_mut(point.y).push(new_actor);
+          new_content[point.x as usize][point.y as usize].push(new_actor);
         }
       }
     }
@@ -110,16 +114,10 @@ impl Map {
     for (x, x_iter) in self.content.iter_mut().enumerate() {
       for (y, y_iter) in x_iter.iter_mut().enumerate() {
         for actor in y_iter.iter_mut() {
-          let point = Point::new(x, y);
+          let point = Point::new(x as i32, y as i32);
           renderer.render_object(point, actor.display_char);
         }
       }
     }
   }
 }
-
-
-
-
-
-

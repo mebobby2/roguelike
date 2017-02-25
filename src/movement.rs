@@ -1,8 +1,13 @@
 extern crate rand;
 extern crate core;
 
-use util::{Point, Bound, Contains, XPointRelation, YPointRelation, PointEquality};
-use game::Game;
+use util::{
+  Point,
+  Contains,
+  XPointRelation,
+  YPointRelation,
+  PointEquality
+};
 use rendering::windows::Windows;
 use self::rand::Rng;
 use game::MoveInfo;
@@ -52,7 +57,7 @@ impl MovementComponent for RandomMovementComponent {
   }
 
   fn box_clone(&self) -> Box<MovementComponent> {
-    Box::new(RandomMovementComponent { move_info: self.move_info })
+    Box::new(RandomMovementComponent { move_info: self.move_info.clone() })
   }
 }
 
@@ -107,7 +112,7 @@ impl MovementComponent for UserMovementComponent {
   }
 
   fn box_clone(&self) -> Box<MovementComponent> {
-    Box::new(UserMovementComponent { move_info: self.move_info })
+    Box::new(UserMovementComponent { move_info: self.move_info.clone() })
   }
 }
 
@@ -155,6 +160,6 @@ impl MovementComponent for AggroMovementComponent {
   }
 
   fn box_clone(&self) -> Box<MovementComponent> {
-    Box::new(AggroMovementComponent { move_info: self.move_info })
+    Box::new(AggroMovementComponent { move_info: self.move_info.clone() })
   }
 }

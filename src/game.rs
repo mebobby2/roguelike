@@ -11,8 +11,8 @@ use rendering::windows::{
   TcodMapWindowComponent
 };
 use actor::Actor;
-use input::{KeyboardInput, GameKeyCode};
-use input::GameKey::{Printable, SpecialKey};
+use input::KeyboardInput;
+use input::GameKey::Printable;
 use map::Maps;
 use game_states::{GameState, MovementGameState, AttackInputGameState};
 
@@ -71,7 +71,16 @@ impl Game {
     let gs: Box<GameState> = Box::new(MovementGameState::new());
 
     let move_info = Rc::new(RefCell::new(MoveInfo::new(map_bounds)));
-    let maps = Maps::new(move_info.clone());
+    let mut maps = Maps::new(move_info.clone());
+
+    maps.friends.push_actor(Point::new(10, 10), Box::new(Actor::dog(10, 10, move_info.clone())));
+    maps.friends.push_actor(Point::new(40, 25), Box::new(Actor::cat(40, 25, move_info.clone())));
+    maps.enemies.push_actor(Point::new(20, 20), Box::new(Actor::kobold(20, 20, move_info.clone())));
+
+    let point = {
+        move_info.borrow().deref().char_location
+    };
+    maps.pcs.push_actor(point, Box::new(Actor::heroine(move_info.clone())));
 
     Game {
       exit: false,
