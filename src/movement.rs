@@ -10,6 +10,7 @@ use input::GameKeyCode;
 
 pub trait MovementComponent {
   fn update(&self, Point, &mut Windows) -> Point;
+  fn box_clone(&self) -> Box<MovementComponent>;
 }
 
 pub struct RandomMovementComponent {
@@ -39,6 +40,10 @@ impl MovementComponent for RandomMovementComponent {
     }
 
     offset
+  }
+
+  fn box_clone(&self) -> Box<MovementComponent> {
+    Box::new(RandomMovementComponent { window_bounds: self.window_bounds })
   }
 }
 
@@ -84,6 +89,10 @@ impl MovementComponent for UserMovementComponent {
       }
     }
   }
+
+  fn box_clone(&self) -> Box<MovementComponent> {
+    Box::new(UserMovementComponent { window_bounds: self.window_bounds })
+  }
 }
 
 pub struct AggroMovementComponent {
@@ -122,5 +131,9 @@ impl MovementComponent for AggroMovementComponent {
         }
       }
     }
+  }
+
+  fn box_clone(&self) -> Box<MovementComponent> {
+    Box::new(AggroMovementComponent { window_bounds: self.window_bounds })
   }
 }

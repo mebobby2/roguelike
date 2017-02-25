@@ -4,3 +4,4 @@ pub mod actor;
 pub mod rendering;
 pub mod movement;
 pub mod input;
+pub mod map;

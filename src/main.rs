@@ -8,15 +8,13 @@ use roguelike::input::GameKey::{SpecialKey};
 
 fn main() {
     let mut game = Game::new();
-    let mut c = Actor::heroine(game.windows.map.get_bounds());
-    let mut npcs: Vec<Box<Actor>> = vec![
-        Box::new(Actor::dog(10, 10, game.windows.map.get_bounds())),
-        Box::new(Actor::cat(40, 25, game.windows.map.get_bounds())),
-        Box::new(Actor::kobold(20, 20, game.windows.map.get_bounds()))
-    ];
+    let game.maps.friends.push_actor(Point::new(10, 10), Box::new(Actor::dog(10, 10, game.windows.get_map_bounds())));
+    let game.maps.friends.push_actor(Point::new(40, 25), Box::new(Actor::cat(40, 25, game.windows.get_map_bounds())));
+    let game.maps.enemies.push_actor(Point::new(20, 20), Box::new(Actor::dog(20, 20, game.windows.get_map_bounds())));
+    let game.maps.pcs.push_actor(Game::get_character_point(), Box::new(Actor::heroine(game.windows.get_map_bounds())));
 
     // render
-    game.render(&npcs, &c);
+    game.render();
 
     // our game loop
     while !(game.rendering_component.window_closed() || game.exit) {
@@ -27,8 +25,8 @@ fn main() {
             SpecialKey(GameKeyCode::Escape) => game.exit = true,
             _ => {}
         }
-        game.update(&mut npcs, &mut c);
+        game.update();
 
-        game.render(&npcs, &c);
+        game.render();
     }
 }
