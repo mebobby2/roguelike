@@ -277,5 +277,5 @@ v[j];
 
 ## Upto
 
-https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-5
-Finished: but need to get code to compile since it was a big refactor
+Follow this commit onwards: https://github.com/jaredonline/rust-roguelike/commit/791b92af1e171160722ce02ce94861ed60142be3
+to implement combat and damage
