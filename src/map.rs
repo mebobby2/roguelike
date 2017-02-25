@@ -36,6 +36,7 @@ impl Maps {
     self.pcs.update(windows);
     self.terrain.update(windows);
     self.friends.update(windows);
+    self.enemies.update(windows);
     self.pcs.update(windows);
   }
 
