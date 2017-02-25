@@ -13,17 +13,34 @@ use input::{KeyboardInput, GameKeyCode};
 use input::GameKey::{Printable, SpecialKey};
 use map::Maps;
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
+pub struct MoveInfo {
+  pub last_keypress: Option<KeyboardInput>,
+  pub char_location: Point,
+  pub bounds: Bound
+}
+
+impl MoveInfo {
+  pub fn new(bound: Bound) -> MoveInfo {
+    MoveInfo {
+      last_keypress: None,
+      char_location: Point::new(40, 25),
+      bounds: bound
+    }
+  }
+}
+
 pub struct Game {
     pub exit: bool,
     pub window_bounds: Bound,
     pub rendering_component: Box<RenderingComponent>,
     pub windows: Windows,
     pub game_state: Box<GameState>,
-    pub maps: Maps
+    pub maps: Maps,
+    move_info: Rc<RefCell<MoveInfo>>
 }
-
-static mut LAST_KEYPRESS: Option<KeyboardInput> = None;
-static mut CHAR_LOCATION: Point = Point { x: 40, y: 25 };
 
 impl Game {
   pub fn new() -> Game {
@@ -38,7 +55,8 @@ impl Game {
     let iw: Box<WindowComponent> = Box::new(TcodInputWindowComponent::new(input_bounds));
     let mw: Box<WindowComponent> = Box::new(TcodMessagesWindowComponent::new(message_bounds));
     let maw: Box<WindowComponent> = Box::new(TcodMapWindowComponent::new(map_bounds));
-    let maps = Maps::new(map_bounds);
+    let move_info = Rc::new(RefCell::new(MoveInfo::new(map_bounds)));
+    let maps = Maps::new(move_info.clone());
 
     let windows = Windows {
       input: iw,
@@ -75,12 +93,17 @@ impl Game {
 
   pub fn wait_for_keypress(&mut self) -> KeyboardInput {
     let k = self.rendering_component.wait_for_keypress();
-    Game::set_last_keypress(k);
+    {
+      self.move_info.borrow_mut().deref_mut().last_keypress = Some(k);
+    }
     return k;
   }
 
   fn update_state(&mut self) {
-    match Game::get_last_keypress() {
+    let last_keypress = {
+      self.move_info.borrow().deref().last_keypress
+    }
+    match last_keypress {
       Some(ks) => {
         match ks.key {
           Printable('/') => {
@@ -111,22 +134,6 @@ impl Game {
       },
       _ => {}
     }
-  }
-
-  pub fn get_last_keypress() -> Option<KeyboardInput> {
-    unsafe { LAST_KEYPRESS }
-  }
-
-  pub fn set_last_keypress(key: KeyboardInput) {
-    unsafe { LAST_KEYPRESS = Some(key); }
-  }
-
-  pub fn get_character_point() -> Point {
-    unsafe { CHAR_LOCATION }
-  }
-
-  pub fn set_character_point(point: Point) {
-    unsafe { CHAR_LOCATION = point; }
   }
 }
 
@@ -161,7 +168,10 @@ impl GameState for MovementGameState {
   }
 
   fn update(&mut self, maps: &mut Maps, windows: &mut Windows) {
-    match Game::get_last_keypress() {
+    let last_keypress = {
+      self.move_info.borrow().deref().last_keypress
+    }
+    match last_keypress {
       Some(ks) => {
         match ks.key {
           // Because Shift is used for attack keys we don't want to do
@@ -205,10 +215,15 @@ impl GameState for AttackInputGameState {
   }
 
   fn update(&mut self, _npcs: &mut Vec<Box<Actor>>, _character: &mut Actor, windows: &mut Windows) {
-    match Game::get_last_keypress() {
+    let last_keypress = {
+      self.move_info.borrow().deref().last_keypress
+    }
+    match last_keypress {
       Some(ks) => {
         let mut msg = "You attack ".to_string();
-        let mut point = Game::get_character_point();
+        let point = {
+          move_info.borrow().deref().char_location;
+        }
         match ks.key {
           SpecialKey(GameKeyCode::Up) => {
             point = point.offset_y(-1);

@@ -262,4 +262,4 @@ fn main() {
 ## Upto
 
 https://jaredonline.svbtle.com/roguelike-tutorial-in-rust-part-5
-upto: One of the reasons we didn’t get to implement combat in the last part was because we didn’t have a good way to tell whether or not there was an enemy in the square the player was attacking
+Finished: but need to get code to compile since it was a big refactor

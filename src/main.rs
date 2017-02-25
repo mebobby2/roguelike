@@ -8,10 +8,14 @@ use roguelike::input::GameKey::{SpecialKey};
 
 fn main() {
     let mut game = Game::new();
-    let game.maps.friends.push_actor(Point::new(10, 10), Box::new(Actor::dog(10, 10, game.windows.get_map_bounds())));
-    let game.maps.friends.push_actor(Point::new(40, 25), Box::new(Actor::cat(40, 25, game.windows.get_map_bounds())));
-    let game.maps.enemies.push_actor(Point::new(20, 20), Box::new(Actor::dog(20, 20, game.windows.get_map_bounds())));
-    let game.maps.pcs.push_actor(Game::get_character_point(), Box::new(Actor::heroine(game.windows.get_map_bounds())));
+    let game.maps.friends.push_actor(Point::new(10, 10), Box::new(Actor::dog(10, 10, game.move_info.clone())));
+    let game.maps.friends.push_actor(Point::new(40, 25), Box::new(Actor::cat(40, 25, game.move_info.clone())));
+    let game.maps.enemies.push_actor(Point::new(20, 20), Box::new(Actor::kobold(20, 20, game.move_info.clone())));
+
+    let point = {
+        move_info.borrow().deref().char_location;
+    }
+    let game.maps.pcs.push_actor(point, Box::new(Actor::heroine(game.move_info.clone())));
 
     // render
     game.render();

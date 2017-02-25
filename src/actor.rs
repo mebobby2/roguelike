@@ -1,9 +1,11 @@
-use util::{Point, Bound};
-use game::Game;
 use rendering::renderers::RenderingComponent;
 use rendering::windows::Windows;
 use movement::{RandomMovementComponent, MovementComponent, UserMovementComponent, AggroMovementComponent};
+use std::cell::RefCell;
+use std::rc::Rc;
 
+use util::Point;
+use game::MoveInfo;
 
 pub struct Actor {
     pub position: Point,
@@ -48,7 +50,9 @@ impl Actor {
     }
 
     pub fn heroine(bound: Bound) -> Actor {
-        let point = Game::get_character_point();
+        let point = {
+            move_info.borrow().deref().char_location;
+        }
         let mc: Box<MovementComponent> = Box::new(UserMovementComponent::new(bound));
         Actor::new(point.x, point.y, '@', mc, true)
     }

@@ -60,7 +60,10 @@ impl UserMovementComponent {
 impl MovementComponent for UserMovementComponent {
   fn update(&self, point: Point, windows: &mut Windows) -> Point {
     let mut offset = Point { x: point.x, y: point.y };
-    offset = match Game::get_last_keypress() {
+    let last_keypress = {
+      self.move_info.borrow().deref().last_keypress
+    }
+    offset = match last_keypress {
       Some(keypress) => {
         match keypress.key {
           SpecialKey(GameKeyCode::Up) => {
@@ -107,7 +110,9 @@ impl AggroMovementComponent {
 
 impl MovementComponent for AggroMovementComponent {
   fn update(&self, point: Point, _: &mut Windows) -> Point {
-    let char_point = Game::get_character_point();
+    let char_point = {
+      move_info.borrow().deref().char_location;
+    }
     let mut offset = Point { x: 0, y: 0 };
 
     match point.compare_x(char_point) {
